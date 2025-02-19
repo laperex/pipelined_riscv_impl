@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module interface_tb;
+module processor_tb;
 	reg clk = 0;
 	reg reset = 1;
 	
@@ -37,6 +37,43 @@ module interface_tb;
 
 
 	assign btnC = reset;
+	
+	
+	processor #(
+		.WIDTH         (32)
+	) u_processor (
+		.clk           (clk),
+		.reset         (reset),
+
+		.PORT_IN_A     (PORT_IN_A),
+		.PORT_IN_B     (PORT_IN_B),
+		.PORT_IN_C     (PORT_IN_C),
+		.PORT_IN_D     (PORT_IN_D),
+		.PORT_OUT_A    (PORT_OUT_A),
+		.PORT_OUT_B    (PORT_OUT_B),
+		.PORT_OUT_C    (PORT_OUT_C),
+		.PORT_OUT_D    (PORT_OUT_D)
+	);
+
+	// reg en = 0;
+	// wire [63: 0] s_result = 0;
+
+	// pipelined_boothe_multiplier #(
+	// 	.WIDTH       (32)
+	// ) u_pipelined_boothe_multiplier (
+	// 	.clk         (clk),
+	// 	.reset       (reset),
+
+	// 	.en          (en),
+	// 	.md          (7),
+	// 	.mr          (6),
+	// 	.s_result    (s_result)
+	// );
+	
+	// initial begin
+	// 	#10 en = 1;
+	// 	#1 en = 0;
+	// end
 
 
 	// interface m_interface(clk, btnC, btnL, RsRx, RsTx, led);
@@ -69,7 +106,6 @@ module interface_tb;
 	// 		end
 	// 	end
 	// end
-	
 
 	wire [7: 0] rd;
 	

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="processor_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="processor_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="890.833 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,021.834 ns"></ZoomEndTime>
+      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="214"></NameColumnWidth>
+      <ValueColumnWidth column_width="128"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="27" />
+   <wvobject type="logic" fp_name="/processor_tb/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/reset">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/btnC">
+      <obj_property name="ElementShortName">btnC</obj_property>
+      <obj_property name="ObjectShortName">btnC</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/RsTx">
+      <obj_property name="ElementShortName">RsTx</obj_property>
+      <obj_property name="ObjectShortName">RsTx</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/led">
+      <obj_property name="ElementShortName">led[15:0]</obj_property>
+      <obj_property name="ObjectShortName">led[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/rd">
+      <obj_property name="ElementShortName">rd[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rd[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/PORT_OUT_A">
+      <obj_property name="ElementShortName">PORT_OUT_A</obj_property>
+      <obj_property name="ObjectShortName">PORT_OUT_A</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/PORT_OUT_B">
+      <obj_property name="ElementShortName">PORT_OUT_B</obj_property>
+      <obj_property name="ObjectShortName">PORT_OUT_B</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/PORT_OUT_C">
+      <obj_property name="ElementShortName">PORT_OUT_C</obj_property>
+      <obj_property name="ObjectShortName">PORT_OUT_C</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/PORT_OUT_D">
+      <obj_property name="ElementShortName">PORT_OUT_D</obj_property>
+      <obj_property name="ObjectShortName">PORT_OUT_D</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/PORT_IN_A">
+      <obj_property name="ElementShortName">PORT_IN_A</obj_property>
+      <obj_property name="ObjectShortName">PORT_IN_A</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/PORT_IN_B">
+      <obj_property name="ElementShortName">PORT_IN_B</obj_property>
+      <obj_property name="ObjectShortName">PORT_IN_B</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/PORT_IN_C">
+      <obj_property name="ElementShortName">PORT_IN_C</obj_property>
+      <obj_property name="ObjectShortName">PORT_IN_C</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/PORT_IN_D">
+      <obj_property name="ElementShortName">PORT_IN_D</obj_property>
+      <obj_property name="ObjectShortName">PORT_IN_D</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_memory/rd_addr">
+      <obj_property name="ElementShortName">rd_addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_addr[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_FETCH/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_FETCH/reset">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_FETCH/pc_in_en">
+      <obj_property name="ElementShortName">pc_in_en</obj_property>
+      <obj_property name="ObjectShortName">pc_in_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_FETCH/pc_in">
+      <obj_property name="ElementShortName">pc_in[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_in[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_FETCH/pc_count_en">
+      <obj_property name="ElementShortName">pc_count_en</obj_property>
+      <obj_property name="ObjectShortName">pc_count_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_FETCH/pc_out">
+      <obj_property name="ElementShortName">pc_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_out[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_FETCH/pc_next_out">
+      <obj_property name="ElementShortName">pc_next_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_next_out[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_FETCH/instr">
+      <obj_property name="ElementShortName">instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">instr[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_FETCH/mem_rd_en">
+      <obj_property name="ElementShortName">mem_rd_en</obj_property>
+      <obj_property name="ObjectShortName">mem_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_FETCH/mem_rd_addr">
+      <obj_property name="ElementShortName">mem_rd_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_rd_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_FETCH/mem_rd_data">
+      <obj_property name="ElementShortName">mem_rd_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_rd_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_FETCH/WIDTH">
+      <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+   </wvobject>
+</wave_config>
