@@ -11,248 +11,268 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="890.833 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,021.834 ns"></ZoomEndTime>
-      <Cursor1Time time="948.833 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="29.801 ns"></ZoomEndTime>
+      <Cursor1Time time="5.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="214"></NameColumnWidth>
-      <ValueColumnWidth column_width="128"></ValueColumnWidth>
+      <ValueColumnWidth column_width="124"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="59" />
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/clk">
+   <WVObjectSize size="64" />
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/reset">
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/reset">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/en">
-      <obj_property name="ElementShortName">en</obj_property>
-      <obj_property name="ObjectShortName">en</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/instr">
+      <obj_property name="ElementShortName">instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">instr[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/md">
-      <obj_property name="ElementShortName">md[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/imm">
+      <obj_property name="ElementShortName">imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">imm[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/mr">
-      <obj_property name="ElementShortName">mr[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/funct3">
+      <obj_property name="ElementShortName">funct3[2:0]</obj_property>
+      <obj_property name="ObjectShortName">funct3[2:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/s_result">
-      <obj_property name="ElementShortName">s_result[7:0]</obj_property>
-      <obj_property name="ObjectShortName">s_result[7:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/funct7">
+      <obj_property name="ElementShortName">funct7[7:0]</obj_property>
+      <obj_property name="ObjectShortName">funct7[7:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/_md">
-      <obj_property name="ElementShortName">_md[4:0][3:0]</obj_property>
-      <obj_property name="ObjectShortName">_md[4:0][3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/rs1_sel">
+      <obj_property name="ElementShortName">rs1_sel[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rs1_sel[4:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/_pd">
-      <obj_property name="ElementShortName">_pd[4:0][3:0]</obj_property>
-      <obj_property name="ObjectShortName">_pd[4:0][3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/rs2_sel">
+      <obj_property name="ElementShortName">rs2_sel[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rs2_sel[4:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/_mr">
-      <obj_property name="ElementShortName">_mr[4:0][3:0]</obj_property>
-      <obj_property name="ObjectShortName">_mr[4:0][3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/rd_sel">
+      <obj_property name="ElementShortName">rd_sel[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_sel[4:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/_mx">
-      <obj_property name="ElementShortName">_mx[4:0]</obj_property>
-      <obj_property name="ObjectShortName">_mx[4:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/instr">
+      <obj_property name="ElementShortName">instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">instr[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/WIDTH">
-      <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
-      <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_DECODE/opcode">
+      <obj_property name="ElementShortName">opcode[6:0]</obj_property>
+      <obj_property name="ObjectShortName">opcode[6:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /clk">
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_DECODE/cntrl_mem_rd_en">
+      <obj_property name="ElementShortName">cntrl_mem_rd_en</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/DE_cntrl_mem_rd_en">
+      <obj_property name="ElementShortName">DE_cntrl_mem_rd_en</obj_property>
+      <obj_property name="ObjectShortName">DE_cntrl_mem_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/EX_cntrl_mem_rd_en">
+      <obj_property name="ElementShortName">EX_cntrl_mem_rd_en</obj_property>
+      <obj_property name="ObjectShortName">EX_cntrl_mem_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_DECODE/cntrl_mem_wr_en">
+      <obj_property name="ElementShortName">cntrl_mem_wr_en</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_wr_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider83" type="divider">
+      <obj_property name="label">EXEC</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /reset">
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/reset">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /md_val">
-      <obj_property name="ElementShortName">md_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md_val[3:0]</obj_property>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/halt">
+      <obj_property name="ElementShortName">halt</obj_property>
+      <obj_property name="ObjectShortName">halt</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /pd_val">
-      <obj_property name="ElementShortName">pd_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pd_val[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/funct3_in">
+      <obj_property name="ElementShortName">funct3_in[2:0]</obj_property>
+      <obj_property name="ObjectShortName">funct3_in[2:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /mr_val">
-      <obj_property name="ElementShortName">mr_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr_val[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/funct3_out">
+      <obj_property name="ElementShortName">funct3_out[2:0]</obj_property>
+      <obj_property name="ObjectShortName">funct3_out[2:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /mx_val">
-      <obj_property name="ElementShortName">mx_val</obj_property>
-      <obj_property name="ObjectShortName">mx_val</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/funct7">
+      <obj_property name="ElementShortName">funct7[7:0]</obj_property>
+      <obj_property name="ObjectShortName">funct7[7:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /md_next">
-      <obj_property name="ElementShortName">md_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md_next[3:0]</obj_property>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/exec_i_type">
+      <obj_property name="ElementShortName">exec_i_type</obj_property>
+      <obj_property name="ObjectShortName">exec_i_type</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /pd_next">
-      <obj_property name="ElementShortName">pd_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pd_next[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/imm">
+      <obj_property name="ElementShortName">imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">imm[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /mr_next">
-      <obj_property name="ElementShortName">mr_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr_next[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/rs1">
+      <obj_property name="ElementShortName">rs1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rs1[31:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /mx_next">
-      <obj_property name="ElementShortName">mx_next</obj_property>
-      <obj_property name="ObjectShortName">mx_next</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/rs2_in">
+      <obj_property name="ElementShortName">rs2_in[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rs2_in[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /IDX">
-      <obj_property name="ElementShortName">IDX[31:0]</obj_property>
-      <obj_property name="ObjectShortName">IDX[31:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/rs2_out">
+      <obj_property name="ElementShortName">rs2_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rs2_out[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[0].u_multi_node /WIDTH">
-      <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
-      <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/rd">
+      <obj_property name="ElementShortName">rd[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rd[31:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /clk">
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/rd_sel_in">
+      <obj_property name="ElementShortName">rd_sel_in[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_sel_in[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_EXECUTE/rd_sel_out">
+      <obj_property name="ElementShortName">rd_sel_out[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_sel_out[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/cntrl_exec_rd_en">
+      <obj_property name="ElementShortName">cntrl_exec_rd_en</obj_property>
+      <obj_property name="ObjectShortName">cntrl_exec_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/cntrl_mem_rd_en_in">
+      <obj_property name="ElementShortName">cntrl_mem_rd_en_in</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_rd_en_in</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/cntrl_mem_rd_en_out">
+      <obj_property name="ElementShortName">cntrl_mem_rd_en_out</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_rd_en_out</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/cntrl_mem_wr_en_in">
+      <obj_property name="ElementShortName">cntrl_mem_wr_en_in</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_wr_en_in</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/cntrl_mem_wr_en_out">
+      <obj_property name="ElementShortName">cntrl_mem_wr_en_out</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_wr_en_out</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider98" type="divider">
+      <obj_property name="label">MEM</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_MEMORY/wr_en">
+      <obj_property name="ElementShortName">wr_en</obj_property>
+      <obj_property name="ObjectShortName">wr_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_MEMORY/wr_size">
+      <obj_property name="ElementShortName">wr_size[1:0]</obj_property>
+      <obj_property name="ObjectShortName">wr_size[1:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_MEMORY/wr_addr">
+      <obj_property name="ElementShortName">wr_addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">wr_addr[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_MEMORY/wr_data">
+      <obj_property name="ElementShortName">wr_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wr_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_MEMORY/rd_en">
+      <obj_property name="ElementShortName">rd_en</obj_property>
+      <obj_property name="ObjectShortName">rd_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_MEMORY/rd_size">
+      <obj_property name="ElementShortName">rd_size[1:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_size[1:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_MEMORY/rd_addr">
+      <obj_property name="ElementShortName">rd_addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_addr[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_MEMORY/rd_data">
+      <obj_property name="ElementShortName">rd_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_MEMORY/memory">
+      <obj_property name="ElementShortName">memory[0:255][7:0]</obj_property>
+      <obj_property name="ObjectShortName">memory[0:255][7:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/EX_cntrl_mem_wr_en">
+      <obj_property name="ElementShortName">EX_cntrl_mem_wr_en</obj_property>
+      <obj_property name="ObjectShortName">EX_cntrl_mem_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/cntrl_mem_wr_en_out">
+      <obj_property name="ElementShortName">cntrl_mem_wr_en_out</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_wr_en_out</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_EXECUTE/cntrl_mem_wr_en_in">
+      <obj_property name="ElementShortName">cntrl_mem_wr_en_in</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_wr_en_in</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/EX_cntrl_mem_wr_en">
+      <obj_property name="ElementShortName">EX_cntrl_mem_wr_en</obj_property>
+      <obj_property name="ObjectShortName">EX_cntrl_mem_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_DECODE/cntrl_mem_wr_en">
+      <obj_property name="ElementShortName">cntrl_mem_wr_en</obj_property>
+      <obj_property name="ObjectShortName">cntrl_mem_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/DE_cntrl_mem_wr_en">
+      <obj_property name="ElementShortName">DE_cntrl_mem_wr_en</obj_property>
+      <obj_property name="ObjectShortName">DE_cntrl_mem_wr_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider420" type="divider">
+      <obj_property name="label">WB</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/EX_rd_sel">
+      <obj_property name="ElementShortName">EX_rd_sel[4:0]</obj_property>
+      <obj_property name="ObjectShortName">EX_rd_sel[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_WRITE_BACK/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /reset">
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_WRITE_BACK/reset">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /md_val">
-      <obj_property name="ElementShortName">md_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md_val[3:0]</obj_property>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/u_WRITE_BACK/halt">
+      <obj_property name="ElementShortName">halt</obj_property>
+      <obj_property name="ObjectShortName">halt</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /pd_val">
-      <obj_property name="ElementShortName">pd_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pd_val[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/rd_sel">
+      <obj_property name="ElementShortName">rd_sel[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_sel[4:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /mr_val">
-      <obj_property name="ElementShortName">mr_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr_val[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/rs1_sel">
+      <obj_property name="ElementShortName">rs1_sel[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rs1_sel[4:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /mx_val">
-      <obj_property name="ElementShortName">mx_val</obj_property>
-      <obj_property name="ObjectShortName">mx_val</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/rs2_sel">
+      <obj_property name="ElementShortName">rs2_sel[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rs2_sel[4:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /md_next">
-      <obj_property name="ElementShortName">md_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md_next[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/rd">
+      <obj_property name="ElementShortName">rd[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rd[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /pd_next">
-      <obj_property name="ElementShortName">pd_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pd_next[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/rs1">
+      <obj_property name="ElementShortName">rs1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rs1[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /mr_next">
-      <obj_property name="ElementShortName">mr_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr_next[3:0]</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/rs2">
+      <obj_property name="ElementShortName">rs2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rs2[31:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /mx_next">
-      <obj_property name="ElementShortName">mx_next</obj_property>
-      <obj_property name="ObjectShortName">mx_next</obj_property>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/reg_x">
+      <obj_property name="ElementShortName">reg_x[31:0][31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_x[31:0][31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /IDX">
-      <obj_property name="ElementShortName">IDX[31:0]</obj_property>
-      <obj_property name="ObjectShortName">IDX[31:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[1].u_multi_node /WIDTH">
-      <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
-      <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /clk">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /reset">
-      <obj_property name="ElementShortName">reset</obj_property>
-      <obj_property name="ObjectShortName">reset</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /md_val">
-      <obj_property name="ElementShortName">md_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md_val[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /pd_val">
-      <obj_property name="ElementShortName">pd_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pd_val[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /mr_val">
-      <obj_property name="ElementShortName">mr_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr_val[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /mx_val">
-      <obj_property name="ElementShortName">mx_val</obj_property>
-      <obj_property name="ObjectShortName">mx_val</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /md_next">
-      <obj_property name="ElementShortName">md_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md_next[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /pd_next">
-      <obj_property name="ElementShortName">pd_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pd_next[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /mr_next">
-      <obj_property name="ElementShortName">mr_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr_next[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /mx_next">
-      <obj_property name="ElementShortName">mx_next</obj_property>
-      <obj_property name="ObjectShortName">mx_next</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /IDX">
-      <obj_property name="ElementShortName">IDX[31:0]</obj_property>
-      <obj_property name="ObjectShortName">IDX[31:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[2].u_multi_node /WIDTH">
-      <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
-      <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /clk">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /reset">
-      <obj_property name="ElementShortName">reset</obj_property>
-      <obj_property name="ObjectShortName">reset</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /md_val">
-      <obj_property name="ElementShortName">md_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md_val[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /pd_val">
-      <obj_property name="ElementShortName">pd_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pd_val[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /mr_val">
-      <obj_property name="ElementShortName">mr_val[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr_val[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /mx_val">
-      <obj_property name="ElementShortName">mx_val</obj_property>
-      <obj_property name="ObjectShortName">mx_val</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /md_next">
-      <obj_property name="ElementShortName">md_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">md_next[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /pd_next">
-      <obj_property name="ElementShortName">pd_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">pd_next[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /mr_next">
-      <obj_property name="ElementShortName">mr_next[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mr_next[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /mx_next">
-      <obj_property name="ElementShortName">mx_next</obj_property>
-      <obj_property name="ObjectShortName">mx_next</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /IDX">
-      <obj_property name="ElementShortName">IDX[31:0]</obj_property>
-      <obj_property name="ObjectShortName">IDX[31:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/processor_tb/u_pipelined_boothe_multiplier/\genblk1[3].u_multi_node /WIDTH">
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/WIDTH">
       <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
       <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
    </wvobject>

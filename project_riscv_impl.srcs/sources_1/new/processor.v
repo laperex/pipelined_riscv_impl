@@ -84,7 +84,12 @@ module DECODE #(
     output reg [4: 0] rs1_sel,
     output reg [4: 0] rs2_sel,
     output reg [4: 0] rd_sel,
-    output reg is_alu_op_i_type,
+
+    output reg exec_i_type,
+
+	output reg cntrl_mem_rd_en,
+	output reg cntrl_mem_wr_en,
+	output reg cntrl_mem_size
 );
 	wire [WIDTH - 1: 0] instr;// = { instr_raw[31: 24], instr_raw[23: 16], instr_raw[15: 8], instr_raw[7: 0] };
 
@@ -200,18 +205,22 @@ module DECODE #(
 			funct3 <= 0;
 			funct7 <= 0;
 
-			is_alu_op_i_type <= 0;
+			exec_i_type <= 0;
 
-			pc_out <= 0;
+			cntrl_mem_rd_en <= 0;
+			cntrl_mem_wr_en <= 0;
+			cntrl_mem_size <= 0;
         end else if (halt == 0) begin
 			rs1_sel <= instr[19: 15];
 			rd_sel  <= instr[11: 7];
 
-			funct3  <= instr[14: 12];
+			funct3  <= opcode == op_load || opcode == op_store ? f3_add: instr[14: 12];
 
-			is_alu_op_i_type <= opcode[5] == 0;
+			cntrl_mem_size <= opcode == op_load || opcode == op_store ? instr[14: 12]: 0;
+			cntrl_mem_rd_en <= opcode == op_load;
+			cntrl_mem_size <= funct3;
 
-			pc_out  <= pc_in;
+			exec_i_type <= opcode[5] == 0 || opcode == op_load || opcode == op_store;
 
 			// Immediates
 			if (opcode == op_load || opcode == op_imm) begin
@@ -231,6 +240,8 @@ module DECODE #(
 
 				rs2_sel <= instr[24: 20];
 				funct7 <= 0;
+
+				cntrl_mem_wr_en <= 1;
 			end else if (opcode == op_branch) begin
 				// B-Type
 				imm[31: 12] <= {20{instr[31]}};
@@ -262,6 +273,9 @@ module DECODE #(
 				rs2_sel <= instr[24: 20];
 
 				funct7 <= instr[31: 25];
+
+				cntrl_mem_rd_en <= 0;
+				cntrl_mem_wr_en <= 0;
 			end
 		end
     end
@@ -275,28 +289,33 @@ module EXECUTE #(
     input reset,
 	input halt,
 
-    input [2: 0] funct3,
+    input [2: 0] funct3_in,
+    output reg [2: 0] funct3_out,
+
     input [7: 0] funct7,
 
-	input is_alu_op_i_type,
+	input exec_i_type,
 
     input  [WIDTH - 1: 0] imm,
 
     input  [WIDTH - 1: 0] rs1,
-    input  [WIDTH - 1: 0] rs2,
+    input  [WIDTH - 1: 0] rs2_in,
+    output reg [WIDTH - 1: 0] rs2_out,
 
-    output reg cntrl_rd_en_in,
-    output reg cntrl_rd_en_out,
+    // output reg cntrl_rd_en_in,
+    // output reg cntrl_rd_en_out,
 
     output reg [WIDTH - 1: 0] rd,
-	
+
 	input [4: 0] rd_sel_in,
 	output reg [4: 0] rd_sel_out,
 
-	output reg cntrl_exec_rd_en,
+	// output reg cntrl_exec_rd_en,
 
-	output reg cntrl_mem_rd_en,
-	output reg cntrl_mem_wr_en
+	input cntrl_mem_rd_en_in,
+	output reg cntrl_mem_rd_en_out,
+	input cntrl_mem_wr_en_in,
+	output reg cntrl_mem_wr_en_out
 );
     parameter f3_add         =  'h0;
     parameter f3_sub         =  'h0;
@@ -321,12 +340,18 @@ module EXECUTE #(
 	parameter f7_sltu        =  'h00;
 
 	// assign rd = funct3 == f3_add
-	wire [WIDTH - 1: 0] B = is_alu_op_i_type ? imm: rs2;
+	wire [WIDTH - 1: 0] B = exec_i_type ? imm: rs2_in;
+	wire [2: 0] funct3 = funct3_in;
 
 	// assign rd =
 	always @(posedge clk) begin
 		if (reset) begin
 			rd <= 0;
+			rs2_out <= 0;
+			funct3_out <= 0;
+			rd_sel_out <= 0;
+			cntrl_mem_rd_en_out <= 0;
+			cntrl_mem_wr_en_out <= 0;
 		end else if (halt == 0) begin
 			rd	<=	funct3 == f3_add 	&& funct7 == f7_add 	? rs1 + B:
 					funct3 == f3_sub 	&& funct7 == f7_sub 	? rs1 - B:
@@ -339,7 +364,12 @@ module EXECUTE #(
 					funct3 == f3_slt 	&& funct7 == f7_slt 	? (rs1 < B ? 1: 0):
 					funct3 == f3_sltu 	&& funct7 == f7_sltu 	? (rs1 < B ? 1: 0):
 					0;
+
+			rs2_out <= rs2_in;
+			funct3_out <= funct3_in;
 			rd_sel_out <= rd_sel_in;
+			cntrl_mem_rd_en_out <= cntrl_mem_rd_en_in;
+			cntrl_mem_wr_en_out <= cntrl_mem_wr_en_in;
 		end
 	end
 endmodule
@@ -348,6 +378,7 @@ endmodule
 module WRITE_BACK #(WIDTH = 32) (
 	input clk,
 	input reset,
+	input halt,
 
 	input [4: 0] rd_sel,
 	input [4: 0] rs1_sel,
@@ -359,18 +390,22 @@ module WRITE_BACK #(WIDTH = 32) (
 );
 	reg [WIDTH - 1: 0] reg_x[WIDTH - 1: 0];
 
-	assign rs1 = reg_x[rs1_sel];
-	assign rs2 = reg_x[rs2_sel];
+	// assign rs1 = reg_x[rs1_sel];
+	assign rs1 = rd_sel == rs1_sel ? rd: reg_x[rs1_sel];
+	// assign rs2 = reg_x[rs2_sel];
+	assign rs2 = rd_sel == rs2_sel ? rd: reg_x[rs2_sel];
 
 	genvar i;
 	for (i = 0; i < WIDTH; i = i + 1) begin
 		always @(posedge clk) begin
-			reg_x[i] <= 0;
+			if (reset) begin
+				reg_x[i] <= 0;
+			end
 		end
 	end
 
 	always @(posedge clk) begin
-		if (reset == 0) begin
+		if (reset == 0 && halt == 0) begin
 			if (rd_sel > 0) begin
 				reg_x[rd_sel] <= rd;
 			end
@@ -417,19 +452,23 @@ module processor #(
 
     wire [WIDTH - 1: 0] instr;
 
+	reg halt = 0;
+
+
     FETCH #(
         .WIDTH(WIDTH)
     ) u_FETCH (
         .clk(clk),
-        .reset(reset),
+        .halt(halt),
+		.reset(reset),
 
         .pc_in_en(pc_in_en),
         .pc_in(FE_pc_in),
 
         .pc_count_en(pc_count_en),
 
-        .pc_out(FE_pc_out),
-        .pc_next_out(FE_pc_next_out),
+        // .pc_out(FE_pc_out),
+        // .pc_next_out(FE_pc_next_out),
 
         .instr(instr),
 
@@ -439,113 +478,145 @@ module processor #(
     );
 
 
-    wire [WIDTH - 1: 0] DE_pc_in = FE_pc_out;
-    wire [WIDTH - 1: 0] DE_pc_out;
+    // wire [WIDTH - 1: 0] DE_pc_in = FE_pc_out;
+    // wire [WIDTH - 1: 0] DE_pc_out;
 
-	wire [2: 0] funct3;
+	wire [2: 0] DE_funct3;
     wire [7: 0] funct7;
 
-	wire is_alu_op_i_type;
+	wire exec_i_type;
 
     wire [WIDTH - 1: 0] imm;
-	
+
 	wire [4: 0] DE_rd_sel;
 	wire [4: 0] rs1_sel;
 	wire [4: 0] rs2_sel;
+
+	wire DE_cntrl_mem_rd_en;
+	wire DE_cntrl_mem_wr_en;
 
 	DECODE #(
 		.WIDTH               (WIDTH)
 	) u_DECODE (
 		.clk                 (clk),
-		.reset               (reset),
+		.halt                (halt),
+		.reset(reset),
 
 		.instr_raw           (instr),
-		.pc_in               (DE_pc_in),
 
 		.imm                 (imm),
 
-		.funct3              (funct3),
+		.funct3              (DE_funct3),
 		.funct7              (funct7),
 
 		.rs1_sel             (rs1_sel),
 		.rs2_sel             (rs2_sel),
 		.rd_sel              (DE_rd_sel),
 
-		.is_alu_op_i_type    (is_alu_op_i_type),
+		.exec_i_type         (exec_i_type),
 
-		.pc_out              (DE_pc_out)
+		.cntrl_mem_rd_en	 (DE_cntrl_mem_rd_en),
+		.cntrl_mem_wr_en	 (DE_cntrl_mem_wr_en)
 	);
 
+
+	wire [2: 0] EX_funct3;
 
     wire [WIDTH - 1: 0] rs1;
     wire [WIDTH - 1: 0] rs2;
     wire [WIDTH - 1: 0] EX_rd;
 
 	wire [4: 0] EX_rd_sel;
+	wire [WIDTH - 1: 0] EX_rs2;
+	wire EX_cntrl_mem_rd_en;
+	wire EX_cntrl_mem_wr_en;
 
 	EXECUTE #(
 		.WIDTH               (WIDTH)
 	) u_EXECUTE (
 		.clk                 (clk),
-		.reset               (reset),
+		.halt                (halt),
+		.reset				 (reset),
 
-		.funct3              (funct3),
+		.funct3_in           (DE_funct3),
+		.funct3_out          (EX_funct3),
+
 		.funct7              (funct7),
 
-		.is_alu_op_i_type    (is_alu_op_i_type),
+		.exec_i_type    	 (exec_i_type),
 
 		.imm                 (imm),
 		.rs1                 (rs1),
-		.rs2                 (rs2),
+		.rs2_in              (rs2),
+		.rs2_out             (EX_rs2),
 		.rd                  (EX_rd),
 
 		.rd_sel_in           (DE_rd_sel),
 		.rd_sel_out          (EX_rd_sel),
 
-		.pc_in               (pc_in),
-		.pc_out              (pc_out)
+        // .pc_out(FE_pc_out),
+        // .pc_next_out(FE_pc_next_out),
+		.cntrl_mem_rd_en_in	 (DE_cntrl_mem_rd_en),
+		.cntrl_mem_rd_en_out (EX_cntrl_mem_rd_en),
+
+		.cntrl_mem_wr_en_in	 (DE_cntrl_mem_wr_en),
+		.cntrl_mem_wr_en_out (EX_cntrl_mem_wr_en)
 	);
-	
+
+
 	wire [WIDTH - 1: 0] ME_rd;
+	wire [4: 0] ME_rd_sel;
 
     MEMORY #(
-        .WIDTH(WIDTH),
-        .SIZE (256),
+        .WIDTH		(WIDTH),
+        .SIZE 		(256),
 
-        .INITFILE("/home/laperex/Programming/Vivado/project_riscv_impl/assets/sample.txt"),
-        .DUMPFILE("")
+        .INITFILE	("/home/laperex/Programming/Vivado/project_riscv_impl/assets/sample.txt"),
+        .DUMPFILE	("")
     ) u_MEMORY (
-        .wr_clk(mem_wr_clk),
-        .rd_clk(mem_rd_clk),
-        .reset (mem_reset),
+        .wr_clk		(mem_wr_clk),
+        .rd_clk		(mem_rd_clk),
+		.reset		(reset),
+        .halt 		(halt),
 
-        .wr_en  (mem_wr_en),
-        .wr_addr(EX_rd),
-    	.wr_size(funct3[1: 0]),
-        .wr_data(rs2),
-		
-        .rd_en  (mem_wr_en),
-        .rd_addr(EX_rd),
-    	.rd_size(funct3[1: 0]),
-        .rd_data(ME_rd),
+		// .rd_sel_in  (EX_cntrl_mem_rd_en ? EX_rd_sel: 0),
+		.rd_sel_in  (EX_rd_sel),
+		.rd_sel_out (ME_rd_sel),
 
-        .fe_rd_en  (mem_rd_en),
-        .fe_rd_addr(mem_rd_addr[7: 0]),
-        .fe_rd_data(mem_rd_data)
+        .wr_en  	(EX_cntrl_mem_wr_en),
+
+        .wr_addr	(EX_rd),
+    	.wr_size	(EX_funct3[1: 0]),
+        .wr_data	(EX_rs2),
+
+
+        .rd_en  	(EX_cntrl_mem_rd_en),
+
+        .rd_addr	(EX_rd),
+    	.rd_size	(EX_funct3[1: 0]),
+        .rd_data	(ME_rd),
+
+
+        .fe_rd_en  	(mem_rd_en),
+        .fe_rd_addr	(mem_rd_addr[7: 0]),
+        .fe_rd_data	(mem_rd_data)
     );
 
+	
 
 	WRITE_BACK #(
 		.WIDTH      (WIDTH)
 	) u_WRITE_BACK (
 		.clk        (clk),
-		.reset      (reset),
+		.halt      	(halt),
+		.reset		(reset),
 
 		.rd_sel     (EX_rd_sel),
 		.rs1_sel    (rs1_sel),
 		.rs2_sel    (rs2_sel),
 
 		.rd         (EX_rd),
+
 		.rs1        (rs1),
 		.rs2        (rs2)
 	);
