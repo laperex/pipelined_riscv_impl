@@ -1,0 +1,57 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Mon Mar  3 13:47:11 2025
+# Process ID: 2005014
+# Current directory: /home/laperex/Programming/Vivado/project_riscv_impl
+# Command line: vivado project_riscv_impl.xpr
+# Log file: /home/laperex/Programming/Vivado/project_riscv_impl/vivado.log
+# Journal file: /home/laperex/Programming/Vivado/project_riscv_impl/vivado.jou
+# Running On        :laperex-l5ip
+# Platform          :Arch
+# Operating System  :Arch Linux
+# Processor Detail  :12th Gen Intel(R) Core(TM) i7-12700H
+# CPU Frequency     :789.620 MHz
+# CPU Physical cores:14
+# CPU Logical cores :20
+# Host memory       :16477 MB
+# Swap memory       :16777 MB
+# Total Virtual     :33254 MB
+# Available Virtual :28284 MB
+#-----------------------------------------------------------
+start_gui
+open_project project_riscv_impl.xpr
+update_compile_order -fileset sources_1
+launch_simulation
+source processor_tb.tcl
+relaunch_sim
+relaunch_sim
+relaunch_sim
+run 50000
+run 50000
+run 50000
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim

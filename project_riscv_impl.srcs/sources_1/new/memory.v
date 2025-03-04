@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module memory #(
+module MEMORY #(
 	parameter WIDTH = 8,
 	parameter SIZE = 256,
 	parameter INITFILE = "",
@@ -28,16 +28,25 @@ module memory #(
 	input wr_clk,
 	input rd_clk,
 	input reset,
+	
+    output reg cntrl_rd_en_in,
+    output reg cntrl_rd_en_out,
 
 	input wr_en,
+	input [1: 0] wr_size,
 	input [$clog2(SIZE - 1) - 1: 0] wr_addr,
 	input [WIDTH - 1: 0] wr_data,
 
 	input rd_en,
+	input [1: 0] rd_size,
 	input [$clog2(SIZE - 1) - 1: 0] rd_addr,
-	output reg [WIDTH - 1: 0] rd_data
+	output reg [WIDTH - 1: 0] rd_data,
+
+	input fe_rd_en,
+	input [$clog2(SIZE - 1) - 1: 0] fe_rd_addr,
+	output reg [WIDTH - 1: 0] fe_rd_data
 );
-	reg [WIDTH - 1: 0] memory [0: SIZE - 1];
+	reg [7: 0] memory [0: SIZE - 1] = "";
 
 
 	initial begin : initialisation
@@ -69,17 +78,46 @@ module memory #(
 
 	always @(posedge rd_clk) begin
 		if (reset) begin
-			rd_data <= 0;
+			fe_rd_data <= 0;
 		end else begin
-			if (rd_en) begin
-				rd_data <= memory[rd_addr];
+			if (fe_rd_en) begin
+				fe_rd_data <= {
+					memory[fe_rd_addr + 0],
+					memory[fe_rd_addr + 1],
+					memory[fe_rd_addr + 2],
+					memory[fe_rd_addr + 3]
+				};
 			end
 		end
 	end
-	
+
 	always @(posedge wr_clk) begin
 		if (wr_en && reset == 0) begin
-			memory[wr_addr] <= wr_data;
+			if (wr_size <= 2) begin
+				memory[wr_addr + 0] <= wr_data[31: 24];
+				memory[wr_addr + 1] <= wr_data[23: 16];
+			end
+			if (wr_size <= 1) begin
+				memory[wr_addr + 2] <= wr_data[15: 8];
+			end
+			if (wr_size <= 0) begin
+				memory[wr_addr + 3] <= wr_data[7: 0];
+			end
+		end
+	end
+
+	always @(posedge rd_clk) begin
+		if (rd_en && reset == 0) begin
+			if (rd_size <= 2) begin
+				rd_data[31: 24] <= memory[rd_addr + 0];
+				rd_data[23: 16] <= memory[rd_addr + 1];
+			end
+			if (rd_size <= 1) begin
+				rd_data[15: 8] <= memory[rd_addr + 2];
+			end
+			if (rd_size <= 0) begin
+				rd_data[7: 0] <= memory[rd_addr + 3];
+			end
 		end
 	end
 endmodule
