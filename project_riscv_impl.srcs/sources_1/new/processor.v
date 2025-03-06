@@ -376,6 +376,40 @@ module WRITE_BACK #(WIDTH = 32) (
 
 	assign rs1 = rd_sel > 0 && rd_sel == rs1_sel ? rd: reg_x[rs1_sel];
 	assign rs2 = rd_sel > 0 && rd_sel == rs2_sel ? rd: reg_x[rs2_sel];
+	
+	wire [WIDTH - 1: 0] zero	= reg_x[0];
+	wire [WIDTH - 1: 0] ra		= reg_x[1];
+	wire [WIDTH - 1: 0] sp		= reg_x[2];
+	wire [WIDTH - 1: 0] gp		= reg_x[3];
+	wire [WIDTH - 1: 0] tp		= reg_x[4];
+	wire [WIDTH - 1: 0] t0		= reg_x[5];
+	wire [WIDTH - 1: 0] t1		= reg_x[6];
+	wire [WIDTH - 1: 0] t2		= reg_x[7];
+	wire [WIDTH - 1: 0] s0		= reg_x[8];
+	wire [WIDTH - 1: 0] fp		= reg_x[8];
+	wire [WIDTH - 1: 0] s1		= reg_x[9];
+	wire [WIDTH - 1: 0] a0		= reg_x[10];
+	wire [WIDTH - 1: 0] a1		= reg_x[11];
+	wire [WIDTH - 1: 0] a2		= reg_x[12];
+	wire [WIDTH - 1: 0] a3		= reg_x[13];
+	wire [WIDTH - 1: 0] a4		= reg_x[14];
+	wire [WIDTH - 1: 0] a5		= reg_x[15];
+	wire [WIDTH - 1: 0] a6		= reg_x[16];
+	wire [WIDTH - 1: 0] a7		= reg_x[17];
+	wire [WIDTH - 1: 0] s2		= reg_x[18];
+	wire [WIDTH - 1: 0] s3		= reg_x[19];
+	wire [WIDTH - 1: 0] s4		= reg_x[20];
+	wire [WIDTH - 1: 0] s5		= reg_x[21];
+	wire [WIDTH - 1: 0] s6		= reg_x[22];
+	wire [WIDTH - 1: 0] s7		= reg_x[23];
+	wire [WIDTH - 1: 0] s8		= reg_x[24];
+	wire [WIDTH - 1: 0] s9		= reg_x[25];
+	wire [WIDTH - 1: 0] s10		= reg_x[26];
+	wire [WIDTH - 1: 0] s11		= reg_x[27];
+	wire [WIDTH - 1: 0] t3		= reg_x[28];
+	wire [WIDTH - 1: 0] t4		= reg_x[29];
+	wire [WIDTH - 1: 0] t5		= reg_x[30];
+	wire [WIDTH - 1: 0] t6		= reg_x[31];
 
 	genvar i;
 	for (i = 0; i < WIDTH; i = i + 1) begin
@@ -413,21 +447,22 @@ module processor #(
     // output [WIDTH - 1: 0] PORT_OUT_D
 );
 	// FETCH
-	reg FE_halt = 0;
+	wire FE_halt;
 	reg [1: 0] FE_sig_ld_pc_type = 3;
 	reg [WIDTH - 1: 0] FE_ld_pc = 'h100;
 
 	wire [WIDTH - 1: 0] FE_pc_current;
 	wire [WIDTH - 1: 0] FE_pc_next;
 
+
 	// FETCH MEMORY
-	reg MEM_halt = 0;
 	reg MEM_fe_rd_en = 1;
 	wire [WIDTH - 1: 0] MEM_fe_rd_addr = FE_pc_current;
 	wire [WIDTH - 1: 0] MEM_fe_rd_data;
 
+
 	// DECODE
-	reg DE_halt = 0;
+	wire DE_halt;
 	wire [WIDTH - 1: 0] DE_instr = MEM_fe_rd_data;
 
 	wire [WIDTH - 1: 0] DE_imm;
@@ -442,8 +477,9 @@ module processor #(
 	wire DE_sig_mem_rd_en;
 	wire DE_sig_mem_wr_en;
 
+
 	// EXECUTE
-	reg EX_halt					= 0;
+	wire EX_halt;
 	wire EX_i_type				= DE_i_type;
 	wire [2: 0] EX_funct3		= DE_funct3;
 	wire [7: 0] EX_funct7		= DE_funct7;
@@ -465,6 +501,7 @@ module processor #(
 
 
 	// MEMORY
+	reg MEM_halt = 0;
 	wire [4: 0] MEM_i_rd_sel = EX_o_rd_sel;
 	wire [4: 0] MEM_o_rd_sel;
 
@@ -478,12 +515,12 @@ module processor #(
 	wire [WIDTH - 1: 0] MEM_rd_addr = EX_rd;
 	wire [WIDTH - 1: 0] MEM_rd_data;
 
+
 	// WRITE BACK
 	reg WB_halt = 0;
 
 	wire [4: 0] WB_rd_sel = EX_o_rd_sel;
 	wire [WIDTH - 1: 0] WB_rd;
-	assign WB_rd = EX_rd;
 	// assign WB_rd = MEM_rd_data;
 
 	wire [4: 0] WB_rs1_sel = DE_rs1_sel;
@@ -494,6 +531,10 @@ module processor #(
 	wire [WIDTH - 1: 0] WB_rs2;
 	assign EX_rs2 = WB_rs2;
 
+	assign FE_halt = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
+	assign DE_halt = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
+	assign EX_halt = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
+	assign WB_rd   = MEM_o_rd_sel > 0 ? MEM_rd_data: EX_rd;
 
 	FETCH #(
 		.WIDTH             (WIDTH)
