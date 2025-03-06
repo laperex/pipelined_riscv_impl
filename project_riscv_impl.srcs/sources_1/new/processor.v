@@ -69,19 +69,16 @@ module DECODE #(
     input [WIDTH - 1: 0] instr_raw,
 
     output reg [WIDTH - 1: 0] imm,
-
     output reg [2: 0] funct3,
     output reg [7: 0] funct7,
-
     output reg [4: 0] rs1_sel,
     output reg [4: 0] rs2_sel,
     output reg [4: 0] rd_sel,
 
-    output reg exec_i_type,
+    output reg ex_i_type,
 
-	output reg cntrl_mem_rd_en,
-	output reg cntrl_mem_wr_en,
-	output reg [2: 0] cntrl_mem_size
+	output reg sig_mem_rd_en,
+	output reg sig_mem_wr_en
 );
 	wire [WIDTH - 1: 0] instr;// = { instr_raw[31: 24], instr_raw[23: 16], instr_raw[15: 8], instr_raw[7: 0] };
 
@@ -197,22 +194,22 @@ module DECODE #(
 			funct3 <= 0;
 			funct7 <= 0;
 
-			exec_i_type <= 0;
+			ex_i_type <= 0;
 
-			cntrl_mem_rd_en <= 0;
-			cntrl_mem_wr_en <= 0;
-			cntrl_mem_size <= 0;
+			sig_mem_rd_en <= 0;
+			sig_mem_wr_en <= 0;
+			// sig_mem_rw_size <= 0;
         end else if (halt == 0) begin
 			rs1_sel <= instr[19: 15];
 			rd_sel  <= instr[11: 7];
 
-			funct3  <= opcode == op_load || opcode == op_store ? f3_add: instr[14: 12];
+			funct3  <= instr[14: 12];
 
-			cntrl_mem_size <= opcode == op_load || opcode == op_store ? instr[14: 12]: 0;
-			cntrl_mem_rd_en <= opcode == op_load;
-			cntrl_mem_wr_en <= opcode == op_store;
+			// sig_mem_rw_size <= opcode == op_load || opcode == op_store ? instr[14: 12]: 0;
+			sig_mem_rd_en <= opcode == op_load;
+			sig_mem_wr_en <= opcode == op_store;
 
-			exec_i_type <= opcode[5] == 0 || opcode == op_load || opcode == op_store;
+			ex_i_type <= opcode[5] == 0;
 
 			// Immediates
 			if (opcode == op_load || opcode == op_imm) begin
@@ -222,6 +219,7 @@ module DECODE #(
 				imm[4: 1] <= instr[24: 21];
 				imm[0] <= instr[20];
 
+				rs2_sel <= 0;
 				funct7 <= 0;
 			end else if (opcode == op_store) begin
 				// S-Type
@@ -240,6 +238,7 @@ module DECODE #(
 				imm[4: 1] <= instr[11: 8];
 				imm[0] <= 0;
 
+				rs2_sel <= 0;
 				funct7 <= 0;
 			end else if (opcode == op_jal) begin
 				// J-Type
@@ -250,6 +249,7 @@ module DECODE #(
 				imm[4: 1] <= instr[24: 21];
 				imm[0] <= 0;
 
+				rs2_sel <= 0;
 				funct7 <= 0;
 			end else if (opcode == op_auipc || opcode == op_lui) begin
 				// U-Type
@@ -258,10 +258,10 @@ module DECODE #(
 				imm[19: 12] <= instr[19: 12];
 				imm[11: 0] <= 0;
 
+				rs2_sel <= 0;
 				funct7 <= 0;
 			end else begin
 				rs2_sel <= instr[24: 20];
-
 				funct7 <= instr[31: 25];
 			end
 		end
@@ -276,37 +276,23 @@ module EXECUTE #(
     input reset,
 	input halt,
 
-    input [2: 0] funct3_in,
-    output reg [2: 0] funct3_out,
-
+	input ex_i_type,
+    input [2: 0] funct3,
     input [7: 0] funct7,
+    input [WIDTH - 1: 0] imm,
 
-	input exec_i_type,
-
-    input  [WIDTH - 1: 0] imm,
-
-    input  [WIDTH - 1: 0] rs1,
-    input  [WIDTH - 1: 0] rs2_in,
-    output reg [WIDTH - 1: 0] rs2_out,
-
-    // output reg cntrl_rd_en_in,
-    // output reg cntrl_rd_en_out,
-
+    input [WIDTH - 1: 0] rs1,
+    input [WIDTH - 1: 0] rs2,
     output reg [WIDTH - 1: 0] rd,
 
-	input [4: 0] rd_sel_in,
-	output reg [4: 0] rd_sel_out,
+	input sig_i_mem_wr_en,
+	output reg sig_o_mem_wr_en,
 
-	// output reg cntrl_exec_rd_en,
+	input sig_i_mem_rd_en,
+	output reg sig_o_mem_rd_en,
 
-	input cntrl_mem_rd_en_in,
-	output reg cntrl_mem_rd_en_out,
-	
-	input cntrl_mem_wr_en_in,
-	output reg cntrl_mem_wr_en_out,
-	
-	input [2: 0] cntrl_mem_size_in,
-	output reg [2: 0] cntrl_mem_size_out
+	output reg [WIDTH - 1: 0] mem_wr_data,
+	output reg [4: 0] mem_rd_sel
 );
     parameter f3_add         =  'h0;
     parameter f3_sub         =  'h0;
@@ -330,39 +316,30 @@ module EXECUTE #(
 	parameter f7_slt         =  'h00;
 	parameter f7_sltu        =  'h00;
 
-	// assign rd = funct3 == f3_add
-	wire [WIDTH - 1: 0] B = exec_i_type ? imm: rs2_in;
-	wire [2: 0] funct3 = funct3_in;
+	wire [WIDTH - 1: 0] B = ex_i_type || sig_i_mem_wr_en || sig_i_mem_rd_en ? imm: rs2;
 
-	// assign rd =
 	always @(posedge clk) begin
 		if (reset) begin
 			rd <= 0;
-			rs2_out <= 0;
-			funct3_out <= 0;
-			rd_sel_out <= 0;
-			cntrl_mem_rd_en_out <= 0;
-			cntrl_mem_wr_en_out <= 0;
-			cntrl_mem_size_out <= 0;
+			
+			sig_o_mem_wr_en <= 0;
+			sig_o_mem_rd_en <= 0;
 		end else if (halt == 0) begin
-			rd	<=	funct3 == f3_add 	&& funct7 == f7_add 	? rs1 + B:
-					funct3 == f3_sub 	&& funct7 == f7_sub 	? rs1 - B:
-					funct3 == f3_xor 	&& funct7 == f7_xor 	? rs1 ^ B:
-					funct3 == f3_or 	&& funct7 == f7_or 		? rs1 | B:
-					funct3 == f3_and 	&& funct7 == f7_and 	? rs1 & B:
-					funct3 == f3_sll 	&& funct7 == f7_sll 	? rs1 << B[4: 0]:
-					funct3 == f3_srl 	&& funct7 == f7_srl 	? rs1 >> B[4: 0]:
-					funct3 == f3_sra 	&& funct7 == f7_sra 	? rs1 >> B[4: 0]:
-					funct3 == f3_slt 	&& funct7 == f7_slt 	? (rs1 < B ? 1: 0):
-					funct3 == f3_sltu 	&& funct7 == f7_sltu 	? (rs1 < B ? 1: 0):
-					0;
+			rd	<=
+				funct3 == f3_add 	&& funct7 == f7_add 	? rs1 + B:
+				funct3 == f3_sub 	&& funct7 == f7_sub 	? rs1 - B:
+				funct3 == f3_xor 	&& funct7 == f7_xor 	? rs1 ^ B:
+				funct3 == f3_or 	&& funct7 == f7_or 		? rs1 | B:
+				funct3 == f3_and 	&& funct7 == f7_and 	? rs1 & B:
+				funct3 == f3_sll 	&& funct7 == f7_sll 	? rs1 << B[4: 0]:
+				funct3 == f3_srl 	&& funct7 == f7_srl 	? rs1 >> B[4: 0]:
+				funct3 == f3_sra 	&& funct7 == f7_sra 	? rs1 >> B[4: 0]:
+				funct3 == f3_slt 	&& funct7 == f7_slt 	? (rs1 < B ? 1: 0):
+				funct3 == f3_sltu 	&& funct7 == f7_sltu 	? (rs1 < B ? 1: 0):
+				0;
 
-			rs2_out <= rs2_in;
-			funct3_out <= funct3_in;
-			rd_sel_out <= rd_sel_in;
-			cntrl_mem_rd_en_out <= cntrl_mem_rd_en_in;
-			cntrl_mem_wr_en_out <= cntrl_mem_wr_en_in;
-			cntrl_mem_size_out <= cntrl_mem_size_in;
+			sig_o_mem_wr_en <= sig_i_mem_wr_en;
+			sig_o_mem_rd_en <= sig_i_mem_wr_en;
 		end
 	end
 endmodule
@@ -411,24 +388,48 @@ module processor #(
     WIDTH = 32
 ) (
     input clk,
-    input reset,
+    input reset
 
-    input [WIDTH - 1: 0] PORT_IN_A,
-    input [WIDTH - 1: 0] PORT_IN_B,
-    input [WIDTH - 1: 0] PORT_IN_C,
-    input [WIDTH - 1: 0] PORT_IN_D,
+    // input [WIDTH - 1: 0] PORT_IN_A,
+    // input [WIDTH - 1: 0] PORT_IN_B,
+    // input [WIDTH - 1: 0] PORT_IN_C,
+    // input [WIDTH - 1: 0] PORT_IN_D,
 
-    output [WIDTH - 1: 0] PORT_OUT_A,
-    output [WIDTH - 1: 0] PORT_OUT_B,
-    output [WIDTH - 1: 0] PORT_OUT_C,
-    output [WIDTH - 1: 0] PORT_OUT_D
+    // output [WIDTH - 1: 0] PORT_OUT_A,
+    // output [WIDTH - 1: 0] PORT_OUT_B,
+    // output [WIDTH - 1: 0] PORT_OUT_C,
+    // output [WIDTH - 1: 0] PORT_OUT_D
 );
+	// FETCH 
 	reg FE_halt = 0;
-	reg [1: 0] FE_sig_ld_pc_type = 0;
+	reg [1: 0] FE_sig_ld_pc_type = 3;
 	reg [WIDTH - 1: 0] FE_ld_pc = 'h100;
 	
 	wire [WIDTH - 1: 0] FE_pc_current;
 	wire [WIDTH - 1: 0] FE_pc_next;
+	
+	// FETCH MEMORY
+	reg MEM_halt = 0;
+	reg MEM_fe_rd_en = 1;
+	wire [WIDTH - 1: 0] MEM_fe_rd_addr = FE_pc_current;
+	wire [WIDTH - 1: 0] MEM_fe_rd_data;
+	
+	// DECODE
+	reg DE_halt = 0;
+	wire [WIDTH - 1: 0] DE_instr = MEM_fe_rd_data;
+
+	wire [WIDTH - 1: 0] DE_imm;
+	wire [2: 0] DE_funct3;
+	wire [7: 0] DE_funct7;
+
+	wire [4: 0] DE_rs1_sel;
+	wire [4: 0] DE_rs2_sel;
+	wire [4: 0] DE_rd_sel;
+
+	wire DE_ex_i_type;
+	wire DE_sig_mem_rd_en;
+	wire DE_sig_mem_wr_en;
+
 
 	FETCH #(
 		.WIDTH             (WIDTH)
@@ -443,6 +444,47 @@ module processor #(
 		.pc_current        (FE_pc_current),
 		.pc_next           (FE_pc_next)
 	);
+
+
+	DECODE #(
+		.WIDTH            (WIDTH)
+	) u_DECODE (
+		.clk              (clk),
+		.reset            (reset),
+		.halt             (DE_halt),
+
+		.instr_raw        (DE_instr),
+		
+		.imm              (DE_imm),
+		.funct3           (DE_funct3),
+		.funct7           (DE_funct7),
+		.rs1_sel          (DE_rs1_sel),
+		.rs2_sel          (DE_rs2_sel),
+		.rd_sel           (DE_rd_sel),
+		
+		.ex_i_type        (DE_ex_i_type),
+		
+		.sig_mem_rd_en    (DE_sig_mem_rd_en),
+		.sig_mem_wr_en    (DE_sig_mem_wr_en)
+	);
+	
+// 	EXECUTE #(
+//     .WIDTH          (32)
+// ) u_EXECUTE (
+//     .clk            (clk),
+//     .reset          (reset),
+//     .halt           (halt),
+//     .ex_i_type      (ex_i_type),
+//     .funct3         (funct3),
+//     .funct7         (funct7),
+//     .imm            (imm),
+//     .rs1            (rs1),
+//     .rs2            (rs2),
+//     .rd             (rd),
+//     .mem_wr_data    (mem_wr_data),
+//     .mem_rd_sel     (mem_rd_sel),
+// );
+
     // wire mem_wr_clk = clk;
     // wire mem_rd_clk = clk;
 
@@ -490,40 +532,37 @@ module processor #(
     //     .mem_rd_data(mem_rd_data)
     // );
 
-	// reg wr_back_halt = 0;
+    MEMORY #(
+        .WIDTH		(WIDTH),
+        .SIZE 		(1024),
 
-    // MEMORY #(
-    //     .WIDTH		(WIDTH),
-    //     .SIZE 		(256),
+        .INITFILE	("/home/laperex/Programming/Vivado/project_riscv_impl/assets/sample.txt"),
+        .DUMPFILE	("")
+    ) u_MEMORY (
+        .wr_clk		(clk),
+        .rd_clk		(clk),
+		.reset		(reset),
+        .halt 		(MEM_halt),
 
-    //     .INITFILE	("/home/laperex/Programming/Vivado/project_riscv_impl/assets/sample.txt"),
-    //     .DUMPFILE	("")
-    // ) u_MEMORY (
-    //     .wr_clk		(mem_wr_clk),
-    //     .rd_clk		(mem_rd_clk),
-	// 	.reset		(reset),
-    //     .halt 		(wr_back_halt),
+		// .rd_sel_in  (EX_cntrl_mem_rd_en ? EX_rd_sel: 0),
+		// .rd_sel_in  (EX_rd_sel),
+		// .rd_sel_out (ME_rd_sel),
 
-	// 	// .rd_sel_in  (EX_cntrl_mem_rd_en ? EX_rd_sel: 0),
-	// 	.rd_sel_in  (EX_rd_sel),
-	// 	.rd_sel_out (ME_rd_sel),
+        // .wr_en  	(EX_cntrl_mem_wr_en),
 
-    //     .wr_en  	(EX_cntrl_mem_wr_en),
-
-    //     .wr_addr	(EX_rd),
-    // 	.wr_size	(EX_cntrl_mem_size),
-    //     .wr_data	(EX_rs2),
+        // .wr_addr	(EX_rd),
+    	// .wr_size	(EX_cntrl_mem_size),
+        // .wr_data	(EX_rs2),
 
 
-    //     .rd_en  	(EX_cntrl_mem_rd_en),
+        // .rd_en  	(EX_cntrl_mem_rd_en),
 
-    //     .rd_addr	(EX_rd),
-    // 	.rd_size	(EX_cntrl_mem_size),
-    //     .rd_data	(ME_rd),
+        // .rd_addr	(EX_rd),
+    	// .rd_size	(EX_cntrl_mem_size),
+        // .rd_data	(ME_rd),
 
-
-    //     .fe_rd_en  	(mem_rd_en),
-    //     .fe_rd_addr	(mem_rd_addr[7: 0]),
-    //     .fe_rd_data	(mem_rd_data)
-    // );
+        .fe_rd_en  	(MEM_fe_rd_en),
+        .fe_rd_addr	(MEM_fe_rd_addr),
+        .fe_rd_data	(MEM_fe_rd_data)
+    );
 endmodule

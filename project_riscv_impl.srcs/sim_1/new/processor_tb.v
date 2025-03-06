@@ -43,16 +43,16 @@ module processor_tb;
 		.WIDTH         (32)
 	) u_processor (
 		.clk           (clk),
-		.reset         (reset),
+		.reset         (reset)
 
-		.PORT_IN_A     (PORT_IN_A),
-		.PORT_IN_B     (PORT_IN_B),
-		.PORT_IN_C     (PORT_IN_C),
-		.PORT_IN_D     (PORT_IN_D),
-		.PORT_OUT_A    (PORT_OUT_A),
-		.PORT_OUT_B    (PORT_OUT_B),
-		.PORT_OUT_C    (PORT_OUT_C),
-		.PORT_OUT_D    (PORT_OUT_D)
+		// .PORT_IN_A     (PORT_IN_A),
+		// .PORT_IN_B     (PORT_IN_B),
+		// .PORT_IN_C     (PORT_IN_C),
+		// .PORT_IN_D     (PORT_IN_D),
+		// .PORT_OUT_A    (PORT_OUT_A),
+		// .PORT_OUT_B    (PORT_OUT_B),
+		// .PORT_OUT_C    (PORT_OUT_C),
+		// .PORT_OUT_D    (PORT_OUT_D)
 	);
 
 	// reg en = 0;
