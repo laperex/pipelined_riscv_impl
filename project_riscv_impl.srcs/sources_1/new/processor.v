@@ -89,7 +89,7 @@ module DECODE #(
 
 	output reg cntrl_mem_rd_en,
 	output reg cntrl_mem_wr_en,
-	output reg cntrl_mem_size
+	output reg [2: 0] cntrl_mem_size
 );
 	wire [WIDTH - 1: 0] instr;// = { instr_raw[31: 24], instr_raw[23: 16], instr_raw[15: 8], instr_raw[7: 0] };
 
@@ -218,7 +218,7 @@ module DECODE #(
 
 			cntrl_mem_size <= opcode == op_load || opcode == op_store ? instr[14: 12]: 0;
 			cntrl_mem_rd_en <= opcode == op_load;
-			cntrl_mem_size <= funct3;
+			cntrl_mem_wr_en <= opcode == op_store;
 
 			exec_i_type <= opcode[5] == 0 || opcode == op_load || opcode == op_store;
 
@@ -240,8 +240,6 @@ module DECODE #(
 
 				rs2_sel <= instr[24: 20];
 				funct7 <= 0;
-
-				cntrl_mem_wr_en <= 1;
 			end else if (opcode == op_branch) begin
 				// B-Type
 				imm[31: 12] <= {20{instr[31]}};
@@ -273,9 +271,6 @@ module DECODE #(
 				rs2_sel <= instr[24: 20];
 
 				funct7 <= instr[31: 25];
-
-				cntrl_mem_rd_en <= 0;
-				cntrl_mem_wr_en <= 0;
 			end
 		end
     end
@@ -314,8 +309,12 @@ module EXECUTE #(
 
 	input cntrl_mem_rd_en_in,
 	output reg cntrl_mem_rd_en_out,
+	
 	input cntrl_mem_wr_en_in,
-	output reg cntrl_mem_wr_en_out
+	output reg cntrl_mem_wr_en_out,
+	
+	input [2: 0] cntrl_mem_size_in,
+	output reg [2: 0] cntrl_mem_size_out
 );
     parameter f3_add         =  'h0;
     parameter f3_sub         =  'h0;
@@ -352,6 +351,7 @@ module EXECUTE #(
 			rd_sel_out <= 0;
 			cntrl_mem_rd_en_out <= 0;
 			cntrl_mem_wr_en_out <= 0;
+			cntrl_mem_size_out <= 0;
 		end else if (halt == 0) begin
 			rd	<=	funct3 == f3_add 	&& funct7 == f7_add 	? rs1 + B:
 					funct3 == f3_sub 	&& funct7 == f7_sub 	? rs1 - B:
@@ -370,6 +370,7 @@ module EXECUTE #(
 			rd_sel_out <= rd_sel_in;
 			cntrl_mem_rd_en_out <= cntrl_mem_rd_en_in;
 			cntrl_mem_wr_en_out <= cntrl_mem_wr_en_in;
+			cntrl_mem_size_out <= cntrl_mem_size_in;
 		end
 	end
 endmodule
@@ -452,7 +453,7 @@ module processor #(
 
     wire [WIDTH - 1: 0] instr;
 
-	reg halt = 0;
+	wire halt;
 
 
     FETCH #(
@@ -494,6 +495,7 @@ module processor #(
 
 	wire DE_cntrl_mem_rd_en;
 	wire DE_cntrl_mem_wr_en;
+	wire [2: 0] DE_cntrl_mem_size;
 
 	DECODE #(
 		.WIDTH               (WIDTH)
@@ -516,7 +518,8 @@ module processor #(
 		.exec_i_type         (exec_i_type),
 
 		.cntrl_mem_rd_en	 (DE_cntrl_mem_rd_en),
-		.cntrl_mem_wr_en	 (DE_cntrl_mem_wr_en)
+		.cntrl_mem_wr_en	 (DE_cntrl_mem_wr_en),
+		.cntrl_mem_size      (DE_cntrl_mem_size)
 	);
 
 
@@ -530,6 +533,8 @@ module processor #(
 	wire [WIDTH - 1: 0] EX_rs2;
 	wire EX_cntrl_mem_rd_en;
 	wire EX_cntrl_mem_wr_en;
+	
+	wire [2: 0] EX_cntrl_mem_size;
 
 	EXECUTE #(
 		.WIDTH               (WIDTH)
@@ -560,12 +565,18 @@ module processor #(
 		.cntrl_mem_rd_en_out (EX_cntrl_mem_rd_en),
 
 		.cntrl_mem_wr_en_in	 (DE_cntrl_mem_wr_en),
-		.cntrl_mem_wr_en_out (EX_cntrl_mem_wr_en)
+		.cntrl_mem_wr_en_out (EX_cntrl_mem_wr_en),
+		
+		.cntrl_mem_size_in      (DE_cntrl_mem_size),
+		.cntrl_mem_size_out      (EX_cntrl_mem_size)
 	);
 
 
 	wire [WIDTH - 1: 0] ME_rd;
+	// wire [4: 0] ME_rd_sel_in = EX_cntrl_mem_rd_en ? EX_rd_sel: 0;
 	wire [4: 0] ME_rd_sel;
+
+	reg wr_back_halt = 0;
 
     MEMORY #(
         .WIDTH		(WIDTH),
@@ -577,7 +588,7 @@ module processor #(
         .wr_clk		(mem_wr_clk),
         .rd_clk		(mem_rd_clk),
 		.reset		(reset),
-        .halt 		(halt),
+        .halt 		(wr_back_halt),
 
 		// .rd_sel_in  (EX_cntrl_mem_rd_en ? EX_rd_sel: 0),
 		.rd_sel_in  (EX_rd_sel),
@@ -586,14 +597,14 @@ module processor #(
         .wr_en  	(EX_cntrl_mem_wr_en),
 
         .wr_addr	(EX_rd),
-    	.wr_size	(EX_funct3[1: 0]),
+    	.wr_size	(EX_cntrl_mem_size),
         .wr_data	(EX_rs2),
 
 
         .rd_en  	(EX_cntrl_mem_rd_en),
 
         .rd_addr	(EX_rd),
-    	.rd_size	(EX_funct3[1: 0]),
+    	.rd_size	(EX_cntrl_mem_size),
         .rd_data	(ME_rd),
 
 
@@ -602,13 +613,13 @@ module processor #(
         .fe_rd_data	(mem_rd_data)
     );
 
-	
+	assign halt = ME_rd_sel == EX_rd_sel && ME_rd_sel > 0 && EX_cntrl_mem_rd_en == 1;
 
 	WRITE_BACK #(
 		.WIDTH      (WIDTH)
 	) u_WRITE_BACK (
 		.clk        (clk),
-		.halt      	(halt),
+		.halt      	(wr_back_halt),
 		.reset		(reset),
 
 		.rd_sel     (EX_rd_sel),

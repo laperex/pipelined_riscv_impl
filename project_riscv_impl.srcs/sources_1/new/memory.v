@@ -34,12 +34,12 @@ module MEMORY #(
     output reg [4: 0] rd_sel_out,
 
 	input wr_en,
-	input [1: 0] wr_size,
+	input [2: 0] wr_size,
 	input [$clog2(SIZE - 1) - 1: 0] wr_addr,
 	input [WIDTH - 1: 0] wr_data,
 
 	input rd_en,
-	input [1: 0] rd_size,
+	input [2: 0] rd_size,
 	input [$clog2(SIZE - 1) - 1: 0] rd_addr,
 	output reg [WIDTH - 1: 0] rd_data,
 
@@ -80,6 +80,8 @@ module MEMORY #(
 	always @(posedge rd_clk) begin
 		if (reset) begin
 			fe_rd_data <= 0;
+			rd_sel_out <= 0;
+			rd_data <= 0;
 		end else if (halt == 0) begin
 			if (fe_rd_en) begin
 				fe_rd_data <= {
@@ -94,14 +96,14 @@ module MEMORY #(
 
 	always @(posedge wr_clk) begin
 		if (wr_en && reset == 0 && halt == 0) begin
-			if (wr_size <= 2) begin
+			if (wr_size >= 2) begin
 				memory[wr_addr + 0] <= wr_data[31: 24];
 				memory[wr_addr + 1] <= wr_data[23: 16];
 			end
-			if (wr_size <= 1) begin
+			if (wr_size >= 1) begin
 				memory[wr_addr + 2] <= wr_data[15: 8];
 			end
-			if (wr_size <= 0) begin
+			if (wr_size >= 0) begin
 				memory[wr_addr + 3] <= wr_data[7: 0];
 			end
 		end
@@ -109,14 +111,14 @@ module MEMORY #(
 
 	always @(posedge rd_clk) begin
 		if (rd_en && reset == 0 && halt == 0) begin
-			if (rd_size <= 2) begin
+			if (rd_size >= 2) begin
 				rd_data[31: 24] <= memory[rd_addr + 0];
 				rd_data[23: 16] <= memory[rd_addr + 1];
 			end
-			if (rd_size <= 1) begin
+			if (rd_size >= 1) begin
 				rd_data[15: 8] <= memory[rd_addr + 2];
 			end
-			if (rd_size <= 0) begin
+			if (rd_size >= 0) begin
 				rd_data[7: 0] <= memory[rd_addr + 3];
 			end
 
