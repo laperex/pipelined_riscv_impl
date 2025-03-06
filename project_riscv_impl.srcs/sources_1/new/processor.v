@@ -27,41 +27,33 @@ module FETCH #(
     input reset,
     input halt,
 
-    input pc_in_en,
-    input [WIDTH - 1: 0] pc_in,
+	input [WIDTH - 1: 0] ld_pc,
+	input [1: 0] sig_ld_pc_type,
 
-    input pc_count_en,
-
-    output reg [WIDTH - 1: 0] pc_out = 0,
-    output [WIDTH - 1: 0] pc_next_out,
-
-    output [WIDTH - 1: 0] instr,
-
-    output reg mem_rd_en,
-    output [WIDTH - 1: 0] mem_rd_addr,
-    input [WIDTH - 1: 0] mem_rd_data
+	output reg [WIDTH - 1: 0] pc_current,
+	output [WIDTH - 1: 0] pc_next
 );
-    assign pc_next_out = pc_in_en ? pc_in : pc_out + 4;
+	localparam LD_PC_DISABLE = 0;
+	localparam LD_PC_PLUSEQ = 1;
+	localparam LD_PC_REPLACE = 2;
+	localparam LD_PC_INCREMENT = 3;
+	
+	wire [WIDTH - 1: 0] pc_inc_val =
+		sig_ld_pc_type == LD_PC_INCREMENT ? 4:
+		sig_ld_pc_type == LD_PC_PLUSEQ ? ld_pc:
+		sig_ld_pc_type == LD_PC_REPLACE ? ld_pc:
+		sig_ld_pc_type == LD_PC_DISABLE ? 0:
+		0;
 
-    assign mem_rd_addr = pc_out;
-	assign instr = mem_rd_data;
-
-	reg pc_ce_en_temp;
+    assign pc_next =
+		sig_ld_pc_type == LD_PC_REPLACE ? pc_inc_val:
+		pc_current + pc_inc_val;
 
     always @(posedge clk) begin
         if (reset) begin
-            pc_out <= 0;
-            mem_rd_en <= 0;
-			pc_ce_en_temp <= 0;
+            pc_current <= 0;
         end else if (halt == 0) begin
-			if (mem_rd_en == 0) begin
-				mem_rd_en <= 1;
-				pc_ce_en_temp <= 1;
-			end
-
-            if (pc_ce_en_temp || pc_in_en) begin
-                pc_out <= pc_next_out;
-            end
+			pc_current <= pc_next;
         end
     end
 endmodule
@@ -431,204 +423,107 @@ module processor #(
     output [WIDTH - 1: 0] PORT_OUT_C,
     output [WIDTH - 1: 0] PORT_OUT_D
 );
-    wire mem_wr_clk = clk;
-    wire mem_rd_clk = clk;
-
-    wire mem_wr_en;
-    wire [WIDTH - 1: 0] mem_wr_addr;
-    wire [WIDTH - 1: 0] mem_wr_data;
-
-    wire mem_rd_en;
-    wire [WIDTH - 1: 0] mem_rd_addr;
-    wire [WIDTH - 1: 0] mem_rd_data;
-
-
-    reg pc_in_en = 0;
-
-    reg pc_count_en = 1;
-
-    reg [WIDTH - 1: 0] FE_pc_in = 0;
-    wire [WIDTH - 1: 0] FE_pc_out;
-    wire [WIDTH - 1: 0] FE_pc_next_out;
-
-    wire [WIDTH - 1: 0] instr;
-
-	wire halt;
-
-
-    FETCH #(
-        .WIDTH(WIDTH)
-    ) u_FETCH (
-        .clk(clk),
-        .halt(halt),
-		.reset(reset),
-
-        .pc_in_en(pc_in_en),
-        .pc_in(FE_pc_in),
-
-        .pc_count_en(pc_count_en),
-
-        // .pc_out(FE_pc_out),
-        // .pc_next_out(FE_pc_next_out),
-
-        .instr(instr),
-
-        .mem_rd_en(mem_rd_en),
-        .mem_rd_addr(mem_rd_addr),
-        .mem_rd_data(mem_rd_data)
-    );
-
-
-    // wire [WIDTH - 1: 0] DE_pc_in = FE_pc_out;
-    // wire [WIDTH - 1: 0] DE_pc_out;
-
-	wire [2: 0] DE_funct3;
-    wire [7: 0] funct7;
-
-	wire exec_i_type;
-
-    wire [WIDTH - 1: 0] imm;
-
-	wire [4: 0] DE_rd_sel;
-	wire [4: 0] rs1_sel;
-	wire [4: 0] rs2_sel;
-
-	wire DE_cntrl_mem_rd_en;
-	wire DE_cntrl_mem_wr_en;
-	wire [2: 0] DE_cntrl_mem_size;
-
-	DECODE #(
-		.WIDTH               (WIDTH)
-	) u_DECODE (
-		.clk                 (clk),
-		.halt                (halt),
-		.reset(reset),
-
-		.instr_raw           (instr),
-
-		.imm                 (imm),
-
-		.funct3              (DE_funct3),
-		.funct7              (funct7),
-
-		.rs1_sel             (rs1_sel),
-		.rs2_sel             (rs2_sel),
-		.rd_sel              (DE_rd_sel),
-
-		.exec_i_type         (exec_i_type),
-
-		.cntrl_mem_rd_en	 (DE_cntrl_mem_rd_en),
-		.cntrl_mem_wr_en	 (DE_cntrl_mem_wr_en),
-		.cntrl_mem_size      (DE_cntrl_mem_size)
-	);
-
-
-	wire [2: 0] EX_funct3;
-
-    wire [WIDTH - 1: 0] rs1;
-    wire [WIDTH - 1: 0] rs2;
-    wire [WIDTH - 1: 0] EX_rd;
-
-	wire [4: 0] EX_rd_sel;
-	wire [WIDTH - 1: 0] EX_rs2;
-	wire EX_cntrl_mem_rd_en;
-	wire EX_cntrl_mem_wr_en;
+	reg FE_halt = 0;
+	reg [1: 0] FE_sig_ld_pc_type = 0;
+	reg [WIDTH - 1: 0] FE_ld_pc = 'h100;
 	
-	wire [2: 0] EX_cntrl_mem_size;
+	wire [WIDTH - 1: 0] FE_pc_current;
+	wire [WIDTH - 1: 0] FE_pc_next;
 
-	EXECUTE #(
-		.WIDTH               (WIDTH)
-	) u_EXECUTE (
-		.clk                 (clk),
-		.halt                (halt),
-		.reset				 (reset),
+	FETCH #(
+		.WIDTH             (WIDTH)
+	) u_FETCH (
+		.clk               (clk),
+		.reset             (reset),
+		.halt              (FE_halt),
 
-		.funct3_in           (DE_funct3),
-		.funct3_out          (EX_funct3),
+		.ld_pc             (FE_ld_pc),
+		.sig_ld_pc_type    (FE_sig_ld_pc_type),
 
-		.funct7              (funct7),
-
-		.exec_i_type    	 (exec_i_type),
-
-		.imm                 (imm),
-		.rs1                 (rs1),
-		.rs2_in              (rs2),
-		.rs2_out             (EX_rs2),
-		.rd                  (EX_rd),
-
-		.rd_sel_in           (DE_rd_sel),
-		.rd_sel_out          (EX_rd_sel),
-
-        // .pc_out(FE_pc_out),
-        // .pc_next_out(FE_pc_next_out),
-		.cntrl_mem_rd_en_in	 (DE_cntrl_mem_rd_en),
-		.cntrl_mem_rd_en_out (EX_cntrl_mem_rd_en),
-
-		.cntrl_mem_wr_en_in	 (DE_cntrl_mem_wr_en),
-		.cntrl_mem_wr_en_out (EX_cntrl_mem_wr_en),
-		
-		.cntrl_mem_size_in      (DE_cntrl_mem_size),
-		.cntrl_mem_size_out      (EX_cntrl_mem_size)
+		.pc_current        (FE_pc_current),
+		.pc_next           (FE_pc_next)
 	);
+    // wire mem_wr_clk = clk;
+    // wire mem_rd_clk = clk;
+
+    // wire mem_wr_en;
+    // wire [WIDTH - 1: 0] mem_wr_addr;
+    // wire [WIDTH - 1: 0] mem_wr_data;
+
+    // wire mem_rd_en;
+    // wire [WIDTH - 1: 0] mem_rd_addr;
+    // wire [WIDTH - 1: 0] mem_rd_data;
 
 
-	wire [WIDTH - 1: 0] ME_rd;
-	// wire [4: 0] ME_rd_sel_in = EX_cntrl_mem_rd_en ? EX_rd_sel: 0;
-	wire [4: 0] ME_rd_sel;
+    // reg pc_in_en = 0;
 
-	reg wr_back_halt = 0;
+    // reg pc_count_en = 1;
 
-    MEMORY #(
-        .WIDTH		(WIDTH),
-        .SIZE 		(256),
+    // reg [WIDTH - 1: 0] FE_pc_in = 0;
+    // wire [WIDTH - 1: 0] FE_pc_out;
+    // wire [WIDTH - 1: 0] FE_pc_next_out;
 
-        .INITFILE	("/home/laperex/Programming/Vivado/project_riscv_impl/assets/sample.txt"),
-        .DUMPFILE	("")
-    ) u_MEMORY (
-        .wr_clk		(mem_wr_clk),
-        .rd_clk		(mem_rd_clk),
-		.reset		(reset),
-        .halt 		(wr_back_halt),
+    // wire [WIDTH - 1: 0] instr;
 
-		// .rd_sel_in  (EX_cntrl_mem_rd_en ? EX_rd_sel: 0),
-		.rd_sel_in  (EX_rd_sel),
-		.rd_sel_out (ME_rd_sel),
-
-        .wr_en  	(EX_cntrl_mem_wr_en),
-
-        .wr_addr	(EX_rd),
-    	.wr_size	(EX_cntrl_mem_size),
-        .wr_data	(EX_rs2),
+	// wire halt;
 
 
-        .rd_en  	(EX_cntrl_mem_rd_en),
+    // FETCH #(
+    //     .WIDTH(WIDTH)
+    // ) u_FETCH (
+    //     .clk(clk),
+    //     .halt(halt),
+	// 	.reset(reset),
 
-        .rd_addr	(EX_rd),
-    	.rd_size	(EX_cntrl_mem_size),
-        .rd_data	(ME_rd),
+    //     .pc_in_en(pc_in_en),
+    //     .pc_in(FE_pc_in),
+
+    //     .pc_count_en(pc_count_en),
+
+    //     // .pc_out(FE_pc_out),
+    //     // .pc_next_out(FE_pc_next_out),
+
+    //     .instr(instr),
+
+    //     .mem_rd_en(mem_rd_en),
+    //     .mem_rd_addr(mem_rd_addr),
+    //     .mem_rd_data(mem_rd_data)
+    // );
+
+	// reg wr_back_halt = 0;
+
+    // MEMORY #(
+    //     .WIDTH		(WIDTH),
+    //     .SIZE 		(256),
+
+    //     .INITFILE	("/home/laperex/Programming/Vivado/project_riscv_impl/assets/sample.txt"),
+    //     .DUMPFILE	("")
+    // ) u_MEMORY (
+    //     .wr_clk		(mem_wr_clk),
+    //     .rd_clk		(mem_rd_clk),
+	// 	.reset		(reset),
+    //     .halt 		(wr_back_halt),
+
+	// 	// .rd_sel_in  (EX_cntrl_mem_rd_en ? EX_rd_sel: 0),
+	// 	.rd_sel_in  (EX_rd_sel),
+	// 	.rd_sel_out (ME_rd_sel),
+
+    //     .wr_en  	(EX_cntrl_mem_wr_en),
+
+    //     .wr_addr	(EX_rd),
+    // 	.wr_size	(EX_cntrl_mem_size),
+    //     .wr_data	(EX_rs2),
 
 
-        .fe_rd_en  	(mem_rd_en),
-        .fe_rd_addr	(mem_rd_addr[7: 0]),
-        .fe_rd_data	(mem_rd_data)
-    );
+    //     .rd_en  	(EX_cntrl_mem_rd_en),
 
-	assign halt = ME_rd_sel == EX_rd_sel && ME_rd_sel > 0 && EX_cntrl_mem_rd_en == 1;
+    //     .rd_addr	(EX_rd),
+    // 	.rd_size	(EX_cntrl_mem_size),
+    //     .rd_data	(ME_rd),
 
-	WRITE_BACK #(
-		.WIDTH      (WIDTH)
-	) u_WRITE_BACK (
-		.clk        (clk),
-		.halt      	(wr_back_halt),
-		.reset		(reset),
 
-		.rd_sel     (EX_rd_sel),
-		.rs1_sel    (rs1_sel),
-		.rs2_sel    (rs2_sel),
-
-		.rd         (EX_rd),
-
-		.rs1        (rs1),
-		.rs2        (rs2)
-	);
+    //     .fe_rd_en  	(mem_rd_en),
+    //     .fe_rd_addr	(mem_rd_addr[7: 0]),
+    //     .fe_rd_data	(mem_rd_data)
+    // );
 endmodule
