@@ -42,9 +42,9 @@ module FETCH #(
 		sig_ld_pc_type == LD_PC_INCREMENT ? 4:
 		sig_ld_pc_type == LD_PC_PLUSEQ ? ld_pc:
 		sig_ld_pc_type == LD_PC_REPLACE ? ld_pc:
-		sig_ld_pc_type == LD_PC_DISABLE ? 0:
 		0;
 
+    // assign pc_current = 
     assign pc_next =
 		sig_ld_pc_type == LD_PC_REPLACE ? pc_inc_val:
 		pc_current + pc_inc_val;
@@ -54,7 +54,7 @@ module FETCH #(
             pc_current <= 0;
         end else if (halt == 0) begin
 			pc_current <= pc_next;
-        end
+		end
     end
 endmodule
 
@@ -447,8 +447,13 @@ module processor #(
     // output [WIDTH - 1: 0] PORT_OUT_D
 );
 	// FETCH
+	localparam LD_PC_DISABLE = 0;
+	localparam LD_PC_PLUSEQ = 1;
+	localparam LD_PC_REPLACE = 2;
+	localparam LD_PC_INCREMENT = 3;
+
 	wire FE_halt;
-	reg [1: 0] FE_sig_ld_pc_type = 3;
+	wire [1: 0] FE_sig_ld_pc_type;
 	reg [WIDTH - 1: 0] FE_ld_pc = 'h100;
 
 	wire [WIDTH - 1: 0] FE_pc_current;
@@ -531,6 +536,14 @@ module processor #(
 	wire [WIDTH - 1: 0] WB_rs2;
 	assign EX_rs2 = WB_rs2;
 
+
+	// assign FE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
+	assign FE_sig_ld_pc_type =
+		EX_i_rd_sel != EX_o_rd_sel && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0 ?
+			LD_PC_DISABLE:
+			LD_PC_INCREMENT;
+	// assign DE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
+	// assign EX_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 
 	assign FE_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
 	assign DE_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;

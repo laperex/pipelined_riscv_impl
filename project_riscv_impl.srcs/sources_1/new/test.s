@@ -3,12 +3,13 @@
 .section .text
 
 _start:
-	li t2, 0x10  # load the immediate 0x140 (address) into register t6
-	li t1, 0x40  # load the immediate 0x140 (address) into register t6
+	li t2, 0xf1  # load the immediate 0x140 (address) into register t6
+	li t1, 0xf4  # load the immediate 0x140 (address) into register t6
+_e:
 	add t1, t1, t2
 	# t1 = x50
 
-	li t6, 0x02  # load the immediate 0x140 (address) into register t6
+	li t6, 0xf20  # load the immediate 0x140 (address) into register t6
 	# nop
 	# nop
 
@@ -27,6 +28,9 @@ _start:
 	# nop
 	li t1, 107
 	li t4, 101
+	la t4, _e
+	
+	j _start
 
 	# # sw t1, 0(t6) # store the word in t0 to memory address in t6 with 0 byte offset
 
