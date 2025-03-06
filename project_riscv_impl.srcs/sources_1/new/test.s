@@ -5,7 +5,7 @@
 _start:
 	li t2, 0x10  # load the immediate 0x140 (address) into register t6
 	li t1, 0x40  # load the immediate 0x140 (address) into register t6
-	# add t6, t1, t2
+	add t1, t1, t2
 
 	li t6, 0x00  # load the immediate 0x140 (address) into register t6
 	# nop

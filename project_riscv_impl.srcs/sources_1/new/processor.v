@@ -468,10 +468,15 @@ module processor #(
 	wire [4: 0] MEM_i_rd_sel = EX_o_rd_sel;
 	wire [4: 0] MEM_o_rd_sel;
 
+	wire [4: 0] MEM_rw_size			= EX_o_mem_rw_size;
+
 	wire MEM_wr_en 					= EX_sig_o_mem_wr_en;
 	wire [WIDTH - 1: 0] MEM_wr_addr = EX_rd;
-	wire [4: 0] MEM_rw_size			= EX_o_mem_rw_size;
 	wire [WIDTH - 1: 0] MEM_wr_data	= EX_o_mem_wr_data;
+	
+	wire MEM_rd_en					= EX_sig_o_mem_rd_en;
+	wire [WIDTH - 1: 0] MEM_rd_addr = EX_rd;
+	wire [WIDTH - 1: 0] MEM_rd_data;
 
 	// WRITE BACK
 	reg WB_halt = 0;
@@ -479,6 +484,7 @@ module processor #(
 	wire [4: 0] WB_rd_sel = EX_o_rd_sel;
 	wire [WIDTH - 1: 0] WB_rd;
 	assign WB_rd = EX_rd;
+	// assign WB_rd = MEM_rd_data;
 
 	wire [4: 0] WB_rs1_sel = DE_rs1_sel;
 	wire [WIDTH - 1: 0] WB_rs1;
@@ -577,11 +583,10 @@ module processor #(
     	.wr_size	(MEM_rw_size),
         .wr_data	(MEM_wr_data),
 
-        // .rd_en  	(MEM_),
-
-        // .rd_addr	(EX_rd),
-    	// .rd_size	(EX_cntrl_mem_size),
-        // .rd_data	(ME_rd),
+        .rd_en  	(MEM_rd_en),
+        .rd_addr	(MEM_rd_addr),
+    	.rd_size	(MEM_rw_size),
+        .rd_data	(MEM_rd_data),
 
         .fe_rd_en  	(MEM_fe_rd_en),
         .fe_rd_addr	(MEM_fe_rd_addr),

@@ -121,8 +121,8 @@ module MEMORY #(
 			if (rd_size >= 0) begin
 				rd_data[7: 0] <= memory[rd_addr + 3];
 			end
-
-			o_rd_sel <= i_rd_sel;
 		end
+
+		o_rd_sel <= rd_en ? i_rd_sel: 0;
 	end
 endmodule
