@@ -30,8 +30,8 @@ module MEMORY #(
 	input reset,
 	input halt,
 	
-    input [4: 0] rd_sel_in,
-    output reg [4: 0] rd_sel_out,
+    input [4: 0] i_rd_sel,
+    output reg [4: 0] o_rd_sel,
 
 	input wr_en,
 	input [2: 0] wr_size,
@@ -80,7 +80,7 @@ module MEMORY #(
 	always @(posedge rd_clk) begin
 		if (reset) begin
 			fe_rd_data <= 0;
-			rd_sel_out <= 0;
+			o_rd_sel <= 0;
 			rd_data <= 0;
 		end else if (halt == 0) begin
 			if (fe_rd_en) begin
@@ -122,7 +122,7 @@ module MEMORY #(
 				rd_data[7: 0] <= memory[rd_addr + 3];
 			end
 
-			rd_sel_out <= rd_sel_in;
+			o_rd_sel <= i_rd_sel;
 		end
 	end
 endmodule

@@ -38,7 +38,6 @@ module processor_tb;
 
 	assign btnC = reset;
 	
-	
 	processor #(
 		.WIDTH         (32)
 	) u_processor (
