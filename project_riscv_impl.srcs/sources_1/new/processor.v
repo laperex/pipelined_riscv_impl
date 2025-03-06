@@ -350,7 +350,7 @@ module EXECUTE #(
 			o_rd_sel <= i_rd_sel;
 
 			sig_o_mem_wr_en <= sig_i_mem_wr_en;
-			sig_o_mem_rd_en <= sig_i_mem_wr_en;
+			sig_o_mem_rd_en <= sig_i_mem_rd_en;
 
 			o_mem_wr_data <= sig_i_mem_rd_en || sig_i_mem_wr_en ? rs2: 0;
 			o_mem_rw_size <= sig_i_mem_rd_en || sig_i_mem_wr_en ? funct3:  0;
@@ -374,8 +374,8 @@ module WRITE_BACK #(WIDTH = 32) (
 );
 	reg [WIDTH - 1: 0] reg_x[WIDTH - 1: 0];
 
-	assign rs1 = rd_sel == rs1_sel ? rd: reg_x[rs1_sel];
-	assign rs2 = rd_sel == rs2_sel ? rd: reg_x[rs2_sel];
+	assign rs1 = rd_sel > 0 && rd_sel == rs1_sel ? rd: reg_x[rs1_sel];
+	assign rs2 = rd_sel > 0 && rd_sel == rs2_sel ? rd: reg_x[rs2_sel];
 
 	genvar i;
 	for (i = 0; i < WIDTH; i = i + 1) begin
@@ -443,21 +443,21 @@ module processor #(
 	wire DE_sig_mem_wr_en;
 
 	// EXECUTE
-	reg EX_halt = 0;
-	wire EX_i_type = DE_i_type;
-	wire [2: 0] EX_funct3 = DE_funct3;
-	wire [7: 0] EX_funct7 = DE_funct7;
-	wire [WIDTH - 1: 0] EX_imm = DE_imm;
+	reg EX_halt					= 0;
+	wire EX_i_type				= DE_i_type;
+	wire [2: 0] EX_funct3		= DE_funct3;
+	wire [7: 0] EX_funct7		= DE_funct7;
+	wire [WIDTH - 1: 0] EX_imm	= DE_imm;
 	wire [WIDTH - 1: 0] EX_rs1;
 	wire [WIDTH - 1: 0] EX_rs2;
 
 	wire [WIDTH - 1: 0] EX_rd;
-	wire [4: 0] EX_i_rd_sel = DE_rd_sel;
+	wire [4: 0] EX_i_rd_sel		= DE_rd_sel;
 	wire [4: 0] EX_o_rd_sel;
 
-	wire EX_sig_i_mem_wr_en = DE_sig_mem_wr_en;
+	wire EX_sig_i_mem_wr_en		= DE_sig_mem_wr_en;
 	wire EX_sig_o_mem_wr_en;
-	wire EX_sig_i_mem_rd_en = DE_sig_mem_rd_en;
+	wire EX_sig_i_mem_rd_en		= DE_sig_mem_rd_en;
 	wire EX_sig_o_mem_rd_en;
 
 	wire [WIDTH - 1: 0] EX_o_mem_wr_data;
