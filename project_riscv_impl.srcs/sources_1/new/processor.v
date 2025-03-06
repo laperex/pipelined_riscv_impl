@@ -519,7 +519,7 @@ module processor #(
 	// WRITE BACK
 	reg WB_halt = 0;
 
-	wire [4: 0] WB_rd_sel = EX_o_rd_sel;
+	wire [4: 0] WB_rd_sel;
 	wire [WIDTH - 1: 0] WB_rd;
 	// assign WB_rd = MEM_rd_data;
 
@@ -531,10 +531,13 @@ module processor #(
 	wire [WIDTH - 1: 0] WB_rs2;
 	assign EX_rs2 = WB_rs2;
 
-	assign FE_halt = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
-	assign DE_halt = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
-	assign EX_halt = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
-	assign WB_rd   = MEM_o_rd_sel > 0 ? MEM_rd_data: EX_rd;
+
+	assign FE_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
+	assign DE_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
+	assign EX_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
+	assign WB_rd_sel = MEM_o_rd_sel > 0 ? MEM_o_rd_sel: EX_o_rd_sel;
+	assign WB_rd  	 = MEM_o_rd_sel > 0 ? MEM_rd_data: EX_rd;
+
 
 	FETCH #(
 		.WIDTH             (WIDTH)
