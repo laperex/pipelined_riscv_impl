@@ -44,7 +44,7 @@ module FETCH #(
 		sig_ld_pc_type == LD_PC_REPLACE ? ld_pc:
 		0;
 
-    // assign pc_current = 
+    // assign pc_current =
     assign pc_next =
 		sig_ld_pc_type == LD_PC_REPLACE ? pc_inc_val:
 		pc_current + pc_inc_val;
@@ -76,6 +76,12 @@ module DECODE #(
     output reg [4: 0] rd_sel,
 
     output reg i_type,
+
+    input i_pc,
+    input i_pc_next,
+
+    output reg o_pc,
+    output reg o_pc_next,
 
 	output reg sig_mem_rd_en,
 	output reg sig_mem_wr_en
@@ -177,12 +183,7 @@ module DECODE #(
     parameter f3_ebreak      =  'h0;
     parameter imm_ebreak     =  'h1;
 
-
     wire [6: 0] opcode = instr[6: 0];
-
-
-    // assign shift_amt = imm[4: 0];
-
 
     always @(posedge clk) begin
 		if (reset) begin
@@ -199,9 +200,11 @@ module DECODE #(
 			sig_mem_rd_en <= 0;
 			sig_mem_wr_en <= 0;
 
+			o_pc <= 0;
+			o_pc_next <= 0;
+
 			// sig_mem_rw_size <= 0;
         end else if (halt == 0) begin
-			rs1_sel <= instr[19: 15];
 			rd_sel  <= instr[11: 7];
 
 			funct3  <= instr[14: 12];
@@ -212,14 +215,18 @@ module DECODE #(
 
 			i_type <= opcode[5] == 0;
 
+			o_pc <= i_pc;
+			o_pc_next <= i_pc_next;
+
 			// Immediates
-			if (opcode == op_load || opcode == op_imm) begin
+			if (opcode == op_load || opcode == op_imm || opcode == op_jalr) begin
 				// I-Type
 				imm[31: 11] <= {21{instr[31]}};
 				imm[10: 5] <= instr[30: 25];
 				imm[4: 1] <= instr[24: 21];
 				imm[0] <= instr[20];
 
+				rs1_sel <= instr[19: 15];
 				rs2_sel <= 0;
 				funct7 <= 0;
 			end else if (opcode == op_store) begin
@@ -229,6 +236,7 @@ module DECODE #(
 				imm[4: 1] <= instr[11: 8];
 				imm[0] <= instr[7];
 
+				rs1_sel <= instr[19: 15];
 				rs2_sel <= instr[24: 20];
 				funct7 <= 0;
 			end else if (opcode == op_branch) begin
@@ -239,6 +247,7 @@ module DECODE #(
 				imm[4: 1] <= instr[11: 8];
 				imm[0] <= 0;
 
+				rs1_sel <= instr[19: 15];
 				rs2_sel <= 0;
 				funct7 <= 0;
 			end else if (opcode == op_jal) begin
@@ -250,6 +259,7 @@ module DECODE #(
 				imm[4: 1] <= instr[24: 21];
 				imm[0] <= 0;
 
+				rs1_sel <= 0;
 				rs2_sel <= 0;
 				funct7 <= 0;
 			end else if (opcode == op_auipc || opcode == op_lui) begin
@@ -259,9 +269,11 @@ module DECODE #(
 				imm[19: 12] <= instr[19: 12];
 				imm[11: 0] <= 0;
 
+				rs1_sel <= 0;
 				rs2_sel <= 0;
 				funct7 <= 0;
 			end else begin
+				rs1_sel <= instr[19: 15];
 				rs2_sel <= instr[24: 20];
 				funct7 <= instr[31: 25];
 			end
@@ -288,6 +300,11 @@ module EXECUTE #(
 
     input [WIDTH - 1: 0] i_rd_sel,
     output reg [WIDTH - 1: 0] o_rd_sel,
+
+	input [WIDTH - 1: 0] i_pc,
+	input [WIDTH - 1: 0] i_pc_next,
+	output reg [WIDTH - 1: 0] o_pc,
+	output reg [WIDTH - 1: 0] o_pc_next,
 
 	input sig_i_mem_wr_en,
 	output reg sig_o_mem_wr_en,
@@ -333,9 +350,13 @@ module EXECUTE #(
 
 			o_mem_wr_data <= 0;
 			o_mem_rw_size <= 0;
+
+			o_pc <= 0;
+			o_pc_next <= 0;
 		end else if (halt == 0) begin
 			rd	<=
-				(funct3 == f3_add 	&& funct7 == f7_add) || sig_i_mem_wr_en || sig_i_mem_rd_en ? rs1 + B:
+				(funct3 == f3_add 	&& funct7 == f7_add)
+					|| sig_i_mem_wr_en || sig_i_mem_rd_en	? rs1 + B:
 				funct3 == f3_sub 	&& funct7 == f7_sub 	? rs1 - B:
 				funct3 == f3_xor 	&& funct7 == f7_xor 	? rs1 ^ B:
 				funct3 == f3_or 	&& funct7 == f7_or 		? rs1 | B:
@@ -348,6 +369,9 @@ module EXECUTE #(
 				0;
 
 			o_rd_sel <= i_rd_sel;
+
+			o_pc <= i_pc;
+			o_pc_next <= o_pc_next;
 
 			sig_o_mem_wr_en <= sig_i_mem_wr_en;
 			sig_o_mem_rd_en <= sig_i_mem_rd_en;
@@ -376,7 +400,7 @@ module WRITE_BACK #(WIDTH = 32) (
 
 	assign rs1 = rd_sel > 0 && rd_sel == rs1_sel ? rd: reg_x[rs1_sel];
 	assign rs2 = rd_sel > 0 && rd_sel == rs2_sel ? rd: reg_x[rs2_sel];
-	
+
 	wire [WIDTH - 1: 0] zero	= reg_x[0];
 	wire [WIDTH - 1: 0] ra		= reg_x[1];
 	wire [WIDTH - 1: 0] sp		= reg_x[2];
@@ -482,6 +506,11 @@ module processor #(
 	wire DE_sig_mem_rd_en;
 	wire DE_sig_mem_wr_en;
 
+	wire [WIDTH - 1: 0] DE_i_pc = FE_pc_current;
+	wire [WIDTH - 1: 0] DE_i_pc_next = FE_pc_next;
+	wire [WIDTH - 1: 0] DE_o_pc;
+	wire [WIDTH - 1: 0] DE_o_pc_next;
+
 
 	// EXECUTE
 	wire EX_halt;
@@ -495,6 +524,11 @@ module processor #(
 	wire [WIDTH - 1: 0] EX_rd;
 	wire [4: 0] EX_i_rd_sel		= DE_rd_sel;
 	wire [4: 0] EX_o_rd_sel;
+
+	wire [WIDTH - 1: 0] EX_i_pc			= DE_o_pc;
+	wire [WIDTH - 1: 0] EX_i_pc_next	= DE_o_pc_next;
+	wire [WIDTH - 1: 0] EX_o_pc;
+	wire [WIDTH - 1: 0] EX_o_pc_next;
 
 	wire EX_sig_i_mem_wr_en		= DE_sig_mem_wr_en;
 	wire EX_sig_o_mem_wr_en;
@@ -515,7 +549,7 @@ module processor #(
 	wire MEM_wr_en 					= EX_sig_o_mem_wr_en;
 	wire [WIDTH - 1: 0] MEM_wr_addr = EX_rd;
 	wire [WIDTH - 1: 0] MEM_wr_data	= EX_o_mem_wr_data;
-	
+
 	wire MEM_rd_en					= EX_sig_o_mem_rd_en;
 	wire [WIDTH - 1: 0] MEM_rd_addr = EX_rd;
 	wire [WIDTH - 1: 0] MEM_rd_data;
@@ -585,6 +619,11 @@ module processor #(
 
 		.i_type           (DE_i_type),
 
+		.i_pc			  (DE_i_pc),
+		.i_pc_next		  (DE_i_pc_next),
+		.o_pc			  (DE_o_pc),
+		.o_pc_next		  (DE_o_pc_next),
+
 		.sig_mem_rd_en    (DE_sig_mem_rd_en),
 		.sig_mem_wr_en    (DE_sig_mem_wr_en)
 	);
@@ -605,8 +644,14 @@ module processor #(
 		.rs1                (EX_rs1),
 		.rs2                (EX_rs2),
 		.rd                 (EX_rd),
+
 		.i_rd_sel           (EX_i_rd_sel),
 		.o_rd_sel           (EX_o_rd_sel),
+
+		.i_pc           	(EX_i_pc),
+		.i_pc_next          (EX_i_pc_next),
+		.o_pc          		(EX_o_pc),
+		.o_pc_next          (EX_o_pc_next),
 
 		.sig_i_mem_wr_en    (EX_sig_i_mem_wr_en),
 		.sig_o_mem_wr_en    (EX_sig_o_mem_wr_en),

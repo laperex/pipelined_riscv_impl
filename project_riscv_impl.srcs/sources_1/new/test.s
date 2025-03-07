@@ -29,7 +29,7 @@ _e:
 	li t1, 107
 	li t4, 101
 	la t4, _e
-	
+
 	j _start
 
 	# # sw t1, 0(t6) # store the word in t0 to memory address in t6 with 0 byte offset
