@@ -76,6 +76,7 @@ module DECODE #(
     output reg [4: 0] rd_sel,
 
     output reg i_type,
+    output reg j_type,
 
     input i_pc,
     input i_pc_next,
@@ -100,7 +101,7 @@ module DECODE #(
 
     parameter f3_addi        =  'h0;  // ADD Immediate
     parameter f3_xori        =  'h4;  // XOR Immediate
-    parameter f3_ori         =  'h6;  // OR Immediate
+    parameter f3_ori         =  'h6;  // OR Impc_currentmediate
     parameter f3_andi        =  'h7;  // AND Immediate
     parameter f3_slli        =  'h1;
     parameter imm_slli_11_5  =  'h00;  // Shift Left Logical Imm
@@ -196,29 +197,27 @@ module DECODE #(
 			funct7 <= 0;
 
 			i_type <= 0;
+			j_type <= 0;
 
 			sig_mem_rd_en <= 0;
 			sig_mem_wr_en <= 0;
 
 			o_pc <= 0;
 			o_pc_next <= 0;
-
-			// sig_mem_rw_size <= 0;
         end else if (halt == 0) begin
 			rd_sel  <= instr[11: 7];
 
 			funct3  <= instr[14: 12];
 
-			// sig_mem_rw_size <= opcode == op_load || opcode == op_store ? instr[14: 12]: 0;
 			sig_mem_rd_en <= opcode == op_load;
 			sig_mem_wr_en <= opcode == op_store;
 
 			i_type <= opcode[5] == 0;
+			j_type <= opcode == op_jal || opcode == op_jalr;
 
 			o_pc <= i_pc;
 			o_pc_next <= i_pc_next;
 
-			// Immediates
 			if (opcode == op_load || opcode == op_imm || opcode == op_jalr) begin
 				// I-Type
 				imm[31: 11] <= {21{instr[31]}};
@@ -290,6 +289,8 @@ module EXECUTE #(
 	input halt,
 
 	input i_type,
+	input j_type,
+
     input [2: 0] funct3,
     input [7: 0] funct7,
     input [WIDTH - 1: 0] imm,
@@ -478,7 +479,7 @@ module processor #(
 
 	wire FE_halt;
 	wire [1: 0] FE_sig_ld_pc_type;
-	reg [WIDTH - 1: 0] FE_ld_pc = 'h100;
+	wire [WIDTH - 1: 0] FE_ld_pc;
 
 	wire [WIDTH - 1: 0] FE_pc_current;
 	wire [WIDTH - 1: 0] FE_pc_next;
@@ -492,6 +493,7 @@ module processor #(
 
 	// DECODE
 	wire DE_halt;
+	wire DE_reset;
 	wire [WIDTH - 1: 0] DE_instr = MEM_fe_rd_data;
 
 	wire [WIDTH - 1: 0] DE_imm;
@@ -503,6 +505,7 @@ module processor #(
 	wire [4: 0] DE_rd_sel;
 
 	wire DE_i_type;
+	wire DE_j_type;
 	wire DE_sig_mem_rd_en;
 	wire DE_sig_mem_wr_en;
 
@@ -515,6 +518,7 @@ module processor #(
 	// EXECUTE
 	wire EX_halt;
 	wire EX_i_type				= DE_i_type;
+	wire EX_j_type				= DE_j_type;
 	wire [2: 0] EX_funct3		= DE_funct3;
 	wire [7: 0] EX_funct7		= DE_funct7;
 	wire [WIDTH - 1: 0] EX_imm	= DE_imm;
@@ -573,9 +577,11 @@ module processor #(
 
 	// assign FE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 	assign FE_sig_ld_pc_type =
+		DE_j_type == 1 && DE_i_type == 0 ?
+			LD_PC_PLUSEQ:
 		EX_i_rd_sel != EX_o_rd_sel && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0 ?
 			LD_PC_DISABLE:
-			LD_PC_INCREMENT;
+		LD_PC_INCREMENT;
 	// assign DE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 	// assign EX_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 
@@ -584,6 +590,11 @@ module processor #(
 	assign EX_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
 	assign WB_rd_sel = MEM_o_rd_sel > 0 ? MEM_o_rd_sel: EX_o_rd_sel;
 	assign WB_rd  	 = MEM_o_rd_sel > 0 ? MEM_rd_data: EX_rd;
+
+	assign DE_reset = (DE_j_type == 1 && DE_i_type == 0) || reset;
+	assign FE_ld_pc =
+		DE_j_type == 1 && DE_i_type == 0 ? DE_imm:
+		0;
 
 
 	FETCH #(
@@ -605,7 +616,7 @@ module processor #(
 		.WIDTH            (WIDTH)
 	) u_DECODE (
 		.clk              (clk),
-		.reset            (reset),
+		.reset            (DE_reset),
 		.halt             (DE_halt),
 
 		.instr_raw        (DE_instr),
@@ -618,6 +629,7 @@ module processor #(
 		.rd_sel           (DE_rd_sel),
 
 		.i_type           (DE_i_type),
+		.j_type           (DE_j_type),
 
 		.i_pc			  (DE_i_pc),
 		.i_pc_next		  (DE_i_pc_next),
@@ -637,6 +649,8 @@ module processor #(
 		.halt               (EX_halt),
 
 		.i_type             (EX_i_type),
+		.j_type             (EX_j_type),
+
 		.funct3             (EX_funct3),
 		.funct7             (EX_funct7),
 		.imm                (EX_imm),
