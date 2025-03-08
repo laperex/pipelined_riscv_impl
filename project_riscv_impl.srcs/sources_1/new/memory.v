@@ -54,7 +54,7 @@ module MEMORY #(
 		integer i;
 
 		for (i = 0; i < SIZE; i = i + 1) begin
-			memory[i][WIDTH - 1: 0] = 0;
+			memory[i][7: 0] = 0;
 		end
 
 		$readmemh(INITFILE, memory);

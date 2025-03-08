@@ -27,33 +27,17 @@ module FETCH #(
     input reset,
     input halt,
 
-	input [WIDTH - 1: 0] ld_pc,
-	input [1: 0] sig_ld_pc_type,
+	input [WIDTH - 1: 0] load_pc_A,
+	input [WIDTH - 1: 0] load_pc_B,
 
-	output reg [WIDTH - 1: 0] pc_current,
-	output [WIDTH - 1: 0] pc_next
+	output reg [WIDTH - 1: 0] pc_out
 );
-	localparam LD_PC_DISABLE = 0;
-	localparam LD_PC_PLUSEQ = 1;
-	localparam LD_PC_REPLACE = 2;
-	localparam LD_PC_INCREMENT = 3;
-
-	wire [WIDTH - 1: 0] pc_inc_val =
-		sig_ld_pc_type == LD_PC_INCREMENT ? 4:
-		sig_ld_pc_type == LD_PC_PLUSEQ ? ld_pc:
-		sig_ld_pc_type == LD_PC_REPLACE ? ld_pc:
-		0;
-
-    // assign pc_current =
-    assign pc_next =
-		sig_ld_pc_type == LD_PC_REPLACE ? pc_inc_val:
-		pc_current + pc_inc_val;
 
     always @(posedge clk) begin
         if (reset) begin
-            pc_current <= 0;
+            pc_out <= 0;
         end else if (halt == 0) begin
-			pc_current <= pc_next;
+			pc_out <= load_pc_A + load_pc_B;
 		end
     end
 endmodule
@@ -78,11 +62,8 @@ module DECODE #(
     output reg i_type,
     output reg j_type,
 
-    input i_pc,
-    input i_pc_next,
-
-    output reg o_pc,
-    output reg o_pc_next,
+    input [WIDTH - 1: 0] i_pc,
+    output reg [WIDTH - 1: 0] o_pc,
 
 	output reg sig_mem_rd_en,
 	output reg sig_mem_wr_en
@@ -203,7 +184,6 @@ module DECODE #(
 			sig_mem_wr_en <= 0;
 
 			o_pc <= 0;
-			o_pc_next <= 0;
         end else if (halt == 0) begin
 			rd_sel  <= instr[11: 7];
 
@@ -216,7 +196,6 @@ module DECODE #(
 			j_type <= opcode == op_jal || opcode == op_jalr;
 
 			o_pc <= i_pc;
-			o_pc_next <= i_pc_next;
 
 			if (opcode == op_load || opcode == op_imm || opcode == op_jalr) begin
 				// I-Type
@@ -303,9 +282,7 @@ module EXECUTE #(
     output reg [WIDTH - 1: 0] o_rd_sel,
 
 	input [WIDTH - 1: 0] i_pc,
-	input [WIDTH - 1: 0] i_pc_next,
 	output reg [WIDTH - 1: 0] o_pc,
-	output reg [WIDTH - 1: 0] o_pc_next,
 
 	input sig_i_mem_wr_en,
 	output reg sig_o_mem_wr_en,
@@ -338,10 +315,28 @@ module EXECUTE #(
 	parameter f7_slt         =  'h00;
 	parameter f7_sltu        =  'h00;
 
-	wire [WIDTH - 1: 0] B = i_type || sig_i_mem_wr_en || sig_i_mem_rd_en ? imm: rs2;
+	wire [WIDTH - 1: 0] A = j_type ? 4: rs1;
+	wire [WIDTH - 1: 0] B =
+		j_type ?
+			i_pc:
+		i_type || sig_i_mem_wr_en || sig_i_mem_rd_en ?
+			imm:
+		rs2;
+
+	reg rst_0;
+	reg rst_1;
 
 	always @(posedge clk) begin
+		rst_0 <= j_type;
+		rst_1 <= rst_0;
+
 		if (reset) begin
+			o_pc <= 0;
+		end else if (halt == 0) begin
+			o_pc <= i_pc;
+		end
+		
+		if (reset || rst_0 || rst_1) begin
 			rd <= 0;
 
 			o_rd_sel <= 0;
@@ -351,28 +346,24 @@ module EXECUTE #(
 
 			o_mem_wr_data <= 0;
 			o_mem_rw_size <= 0;
-
-			o_pc <= 0;
-			o_pc_next <= 0;
 		end else if (halt == 0) begin
-			rd	<=
-				(funct3 == f3_add 	&& funct7 == f7_add)
-					|| sig_i_mem_wr_en || sig_i_mem_rd_en	? rs1 + B:
-				funct3 == f3_sub 	&& funct7 == f7_sub 	? rs1 - B:
-				funct3 == f3_xor 	&& funct7 == f7_xor 	? rs1 ^ B:
-				funct3 == f3_or 	&& funct7 == f7_or 		? rs1 | B:
-				funct3 == f3_and 	&& funct7 == f7_and 	? rs1 & B:
-				funct3 == f3_sll 	&& funct7 == f7_sll 	? rs1 << B[4: 0]:
-				funct3 == f3_srl 	&& funct7 == f7_srl 	? rs1 >> B[4: 0]:
-				funct3 == f3_sra 	&& funct7 == f7_sra 	? rs1 >> B[4: 0]:
-				funct3 == f3_slt 	&& funct7 == f7_slt 	? (rs1 < B ? 1: 0):
-				funct3 == f3_sltu 	&& funct7 == f7_sltu 	? (rs1 < B ? 1: 0):
+			rd	<= j_type ? B:
+				sig_i_mem_wr_en || sig_i_mem_rd_en ||
+					(funct3 == f3_add && funct7 == f7_add)	? A + B:
+				funct3 == f3_sub 	&& funct7 == f7_sub 	? A - B:
+				funct3 == f3_xor 	&& funct7 == f7_xor 	? A ^ B:
+				funct3 == f3_or 	&& funct7 == f7_or 		? A | B:
+				funct3 == f3_and 	&& funct7 == f7_and 	? A & B:
+				funct3 == f3_sll 	&& funct7 == f7_sll 	? A << B[4: 0]:
+				funct3 == f3_srl 	&& funct7 == f7_srl 	? A >> B[4: 0]:
+				funct3 == f3_sra 	&& funct7 == f7_sra 	? A >> B[4: 0]:
+				funct3 == f3_slt 	&& funct7 == f7_slt 	? (A < B ? 1: 0):
+				funct3 == f3_sltu 	&& funct7 == f7_sltu 	? (A < B ? 1: 0):
 				0;
 
 			o_rd_sel <= i_rd_sel;
 
 			o_pc <= i_pc;
-			o_pc_next <= o_pc_next;
 
 			sig_o_mem_wr_en <= sig_i_mem_wr_en;
 			sig_o_mem_rd_en <= sig_i_mem_rd_en;
@@ -478,22 +469,22 @@ module processor #(
 	localparam LD_PC_INCREMENT = 3;
 
 	wire FE_halt;
-	wire [1: 0] FE_sig_ld_pc_type;
-	wire [WIDTH - 1: 0] FE_ld_pc;
+	wire FE_reset;
 
-	wire [WIDTH - 1: 0] FE_pc_current;
-	wire [WIDTH - 1: 0] FE_pc_next;
+	wire [WIDTH - 1: 0] FE_load_pc_A;
+	wire [WIDTH - 1: 0] FE_load_pc_B;
+
+	wire [WIDTH - 1: 0] FE_pc;
 
 
 	// FETCH MEMORY
-	reg MEM_fe_rd_en = 1;
-	wire [WIDTH - 1: 0] MEM_fe_rd_addr = FE_pc_current;
+	wire MEM_fe_rd_en;
+	wire [WIDTH - 1: 0] MEM_fe_rd_addr = FE_pc;
 	wire [WIDTH - 1: 0] MEM_fe_rd_data;
 
 
 	// DECODE
 	wire DE_halt;
-	wire DE_reset;
 	wire [WIDTH - 1: 0] DE_instr = MEM_fe_rd_data;
 
 	wire [WIDTH - 1: 0] DE_imm;
@@ -509,10 +500,8 @@ module processor #(
 	wire DE_sig_mem_rd_en;
 	wire DE_sig_mem_wr_en;
 
-	wire [WIDTH - 1: 0] DE_i_pc = FE_pc_current;
-	wire [WIDTH - 1: 0] DE_i_pc_next = FE_pc_next;
+	wire [WIDTH - 1: 0] DE_i_pc = FE_pc;
 	wire [WIDTH - 1: 0] DE_o_pc;
-	wire [WIDTH - 1: 0] DE_o_pc_next;
 
 
 	// EXECUTE
@@ -529,10 +518,8 @@ module processor #(
 	wire [4: 0] EX_i_rd_sel		= DE_rd_sel;
 	wire [4: 0] EX_o_rd_sel;
 
-	wire [WIDTH - 1: 0] EX_i_pc			= DE_o_pc;
-	wire [WIDTH - 1: 0] EX_i_pc_next	= DE_o_pc_next;
+	wire [WIDTH - 1: 0] EX_i_pc	= DE_o_pc;
 	wire [WIDTH - 1: 0] EX_o_pc;
-	wire [WIDTH - 1: 0] EX_o_pc_next;
 
 	wire EX_sig_i_mem_wr_en		= DE_sig_mem_wr_en;
 	wire EX_sig_o_mem_wr_en;
@@ -545,10 +532,10 @@ module processor #(
 
 	// MEMORY
 	reg MEM_halt = 0;
-	wire [4: 0] MEM_i_rd_sel = EX_o_rd_sel;
+	wire [4: 0] MEM_i_rd_sel		= EX_o_rd_sel;
 	wire [4: 0] MEM_o_rd_sel;
 
-	wire [4: 0] MEM_rw_size			= EX_o_mem_rw_size;
+	wire [2: 0] MEM_rw_size			= EX_o_mem_rw_size;
 
 	wire MEM_wr_en 					= EX_sig_o_mem_wr_en;
 	wire [WIDTH - 1: 0] MEM_wr_addr = EX_rd;
@@ -566,22 +553,32 @@ module processor #(
 	wire [WIDTH - 1: 0] WB_rd;
 	// assign WB_rd = MEM_rd_data;
 
-	wire [4: 0] WB_rs1_sel = DE_rs1_sel;
+	wire [4: 0] WB_rs1_sel	= DE_rs1_sel;
 	wire [WIDTH - 1: 0] WB_rs1;
-	assign EX_rs1 = WB_rs1;
+	assign EX_rs1			= WB_rs1;
 
-	wire [4: 0] WB_rs2_sel = DE_rs2_sel;
+	wire [4: 0] WB_rs2_sel	= DE_rs2_sel;
 	wire [WIDTH - 1: 0] WB_rs2;
-	assign EX_rs2 = WB_rs2;
-
+	assign EX_rs2			= WB_rs2;
 
 	// assign FE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
-	assign FE_sig_ld_pc_type =
-		DE_j_type == 1 && DE_i_type == 0 ?
-			LD_PC_PLUSEQ:
+	assign FE_load_pc_B =
+		DE_j_type == 1 ?
+			DE_imm:
 		EX_i_rd_sel != EX_o_rd_sel && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0 ?
-			LD_PC_DISABLE:
-		LD_PC_INCREMENT;
+			0:
+		4;
+
+	assign FE_load_pc_A =
+		DE_j_type == 1 && DE_i_type == 1 ?
+			WB_rs1:
+		DE_j_type == 1 && DE_i_type == 0 ?
+			EX_o_pc:
+		FE_pc;
+
+	// assign FE_halt = DE_j_type;
+
+	assign MEM_fe_rd_en = 1;
 	// assign DE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 	// assign EX_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 
@@ -591,10 +588,17 @@ module processor #(
 	assign WB_rd_sel = MEM_o_rd_sel > 0 ? MEM_o_rd_sel: EX_o_rd_sel;
 	assign WB_rd  	 = MEM_o_rd_sel > 0 ? MEM_rd_data: EX_rd;
 
-	assign DE_reset = (DE_j_type == 1 && DE_i_type == 0) || reset;
-	assign FE_ld_pc =
-		DE_j_type == 1 && DE_i_type == 0 ? DE_imm:
-		0;
+	// assign DE_reset = (DE_j_type == 1 && DE_i_type == 0) || reset;
+	// assign FE_reset = (DE_j_type == 1 && DE_i_type == 0) || reset;
+	assign FE_ld_pc = DE_j_type == 1 && DE_i_type == 0 ? DE_imm: 0;
+	
+
+	// reg EX_reset;
+	// reg DE_reset;
+	// always @(posedge clk) begin
+	// 	DE_reset <= (DE_j_type == 1 && DE_i_type == 0) || reset;
+	// 	EX_reset <= reset | DE_reset;
+	// end
 
 
 	FETCH #(
@@ -604,11 +608,10 @@ module processor #(
 		.reset             (reset),
 		.halt              (FE_halt),
 
-		.ld_pc             (FE_ld_pc),
-		.sig_ld_pc_type    (FE_sig_ld_pc_type),
-
-		.pc_current        (FE_pc_current),
-		.pc_next           (FE_pc_next)
+		.load_pc_A         (FE_load_pc_A),
+		.load_pc_B         (FE_load_pc_B),
+		
+		.pc_out            (FE_pc)
 	);
 
 
@@ -616,7 +619,7 @@ module processor #(
 		.WIDTH            (WIDTH)
 	) u_DECODE (
 		.clk              (clk),
-		.reset            (DE_reset),
+		.reset            (reset),
 		.halt             (DE_halt),
 
 		.instr_raw        (DE_instr),
@@ -632,9 +635,7 @@ module processor #(
 		.j_type           (DE_j_type),
 
 		.i_pc			  (DE_i_pc),
-		.i_pc_next		  (DE_i_pc_next),
 		.o_pc			  (DE_o_pc),
-		.o_pc_next		  (DE_o_pc_next),
 
 		.sig_mem_rd_en    (DE_sig_mem_rd_en),
 		.sig_mem_wr_en    (DE_sig_mem_wr_en)
@@ -663,9 +664,7 @@ module processor #(
 		.o_rd_sel           (EX_o_rd_sel),
 
 		.i_pc           	(EX_i_pc),
-		.i_pc_next          (EX_i_pc_next),
 		.o_pc          		(EX_o_pc),
-		.o_pc_next          (EX_o_pc_next),
 
 		.sig_i_mem_wr_en    (EX_sig_i_mem_wr_en),
 		.sig_o_mem_wr_en    (EX_sig_o_mem_wr_en),
