@@ -20,362 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module FETCH #(
-    WIDTH = 32
-) (
-    input clk,
-    input reset,
-    input halt,
 
-	input [WIDTH - 1: 0] load_pc_A,
-	input [WIDTH - 1: 0] load_pc_B,
 
-	output reg [WIDTH - 1: 0] pc_out
-);
 
-    always @(posedge clk) begin
-        if (reset) begin
-            pc_out <= 0;
-        end else if (halt == 0) begin
-			pc_out <= load_pc_A + load_pc_B;
-		end
-    end
-endmodule
 
 
-module DECODE #(
-    WIDTH = 32
-) (
-    input clk,
-    input reset,
-	input halt,
 
-    input [WIDTH - 1: 0] instr_raw,
-
-    output reg [WIDTH - 1: 0] imm,
-    output reg [2: 0] funct3,
-    output reg [7: 0] funct7,
-    output reg [4: 0] rs1_sel,
-    output reg [4: 0] rs2_sel,
-    output reg [4: 0] rd_sel,
-
-    output reg i_type,
-    output reg j_type,
-
-    input [WIDTH - 1: 0] i_pc,
-    output reg [WIDTH - 1: 0] o_pc,
-
-	output reg sig_mem_rd_en,
-	output reg sig_mem_wr_en
-);
-	wire [WIDTH - 1: 0] instr;// = { instr_raw[31: 24], instr_raw[23: 16], instr_raw[15: 8], instr_raw[7: 0] };
-
-	// convert MSB order to LSB order
-	genvar i;
-	for (i = 0; i < WIDTH / 8; i = i + 1) begin
-		assign instr[(8 * (i + 1)) - 1: 8 * i] = instr_raw[WIDTH - (8 * i) - 1: WIDTH - (8 * (i + 1))];
-	end
-
-    // -> Integer Register-Immediate Instructions
-    // ---> I-Type
-    parameter op_imm         =  'b0010011;
-
-    parameter f3_addi        =  'h0;  // ADD Immediate
-    parameter f3_xori        =  'h4;  // XOR Immediate
-    parameter f3_ori         =  'h6;  // OR Impc_currentmediate
-    parameter f3_andi        =  'h7;  // AND Immediate
-    parameter f3_slli        =  'h1;
-    parameter imm_slli_11_5  =  'h00;  // Shift Left Logical Imm
-    parameter f3_srli        =  'h5;
-    parameter imm_srli_11_5  =  'h00;  // Shift Right Logical Imm
-    parameter f3_srai        =  'h5;
-    parameter imm_srai_11_5  =  'h20;  // Shift Right Arith Imm
-    parameter f3_slti        =  'h2;  // Set Less Than Imm
-    parameter f3_sltiu       =  'h3;  // Set Less Than Imm (U)
-
-
-    // ---> U-Type
-    parameter op_lui         =  'b0110111;
-    parameter op_auipc       =  'b0010111;
-
-
-    // -> Integer Register-Register Operations
-    // ---> R - Type
-
-    parameter op_reg         =  'b0110011;
-
-    parameter f3_add         =  'h0;
-    parameter f7_add         =  'h00;  //ADD
-    parameter f3_sub         =  'h0;
-    parameter f7_sub         =  'h20;  //SUB
-    parameter f3_xor         =  'h4;
-    parameter f7_xor         =  'h00;  //XOR
-    parameter f3_or          =  'h6;
-    parameter f7_or          =  'h00;  //OR
-    parameter f3_and         =  'h7;
-    parameter f7_and         =  'h00;  //AND
-    parameter f3_sll         =  'h1;
-    parameter f7_sll         =  'h00;  //Shift Left Logical
-    parameter f3_srl         =  'h5;
-    parameter f7_srl         =  'h00;  //Shift Right Logical
-    parameter f3_sra         =  'h5;
-    parameter f7_sra         =  'h20;  //Shift Right Arith*
-    parameter f3_slt         =  'h2;
-    parameter f7_slt         =  'h00;  //Set Less Than
-    parameter f3_sltu        =  'h3;
-    parameter f7_sltu        =  'h00;  //Set Less Than (U)
-
-    // -> Unconditional Jumps
-    // ---> J-type
-    parameter op_jal         =  'b1101111;  // offset[20: 1]
-
-    // ---> I-type
-    parameter op_jalr        =  'b1100111;  // offset [11: 0]
-    parameter f3_jalr        =  'h0;
-
-    // -> Conditional Branches
-    // B-Type
-    parameter op_branch      =  'b1100011;
-    parameter f3_beq         =  'h0;  // Branch ==
-    parameter f3_bne         =  'h1;  // Branch !=
-    parameter f3_blt         =  'h4;  // Branch <
-    parameter f3_bge         =  'h5;  // Branch ≥
-    parameter f3_bltu        =  'h6;  // Branch < (U)
-    parameter f3_bgeu        =  'h7;  // Branch ≥ (U)
-
-    // -> Load and Store Instructions
-    // S-Type
-    parameter op_load        =  'b0000011;
-    parameter f3_lb          =  'h0;  // Load Byte
-    parameter f3_lh          =  'h1;  // Load Half
-    parameter f3_lw          =  'h2;  // Load Word
-    parameter f3_lbu         =  'h4;  // Load Byte (U)
-    parameter f3_lhu         =  'h5;  // Load Half (U)
-
-    parameter op_store       =  'b0100011;
-    parameter f3_sb          =  'h0;  // Store Byte
-    parameter f3_sh          =  'h1;  // Store Half
-    parameter f3_sw          =  'h2;  // Store Word
-
-    // -> Environment Instructions
-    parameter op_env         =  'b1110011;
-
-    parameter f3_ecall       =  'h0;
-    parameter imm_ecall      =  'h0;
-    parameter f3_ebreak      =  'h0;
-    parameter imm_ebreak     =  'h1;
-
-    wire [6: 0] opcode = instr[6: 0];
-
-    always @(posedge clk) begin
-		if (reset) begin
-			rs1_sel <= 0;
-			rs2_sel <= 0;
-			imm <= 0;
-			rd_sel <= 0;
-
-			funct3 <= 0;
-			funct7 <= 0;
-
-			i_type <= 0;
-			j_type <= 0;
-
-			sig_mem_rd_en <= 0;
-			sig_mem_wr_en <= 0;
-
-			o_pc <= 0;
-        end else if (halt == 0) begin
-			rd_sel  <= instr[11: 7];
-
-			funct3  <= instr[14: 12];
-
-			sig_mem_rd_en <= opcode == op_load;
-			sig_mem_wr_en <= opcode == op_store;
-
-			i_type <= opcode[5] == 0;
-			j_type <= opcode == op_jal || opcode == op_jalr;
-
-			o_pc <= i_pc;
-
-			if (opcode == op_load || opcode == op_imm || opcode == op_jalr) begin
-				// I-Type
-				imm[31: 11] <= {21{instr[31]}};
-				imm[10: 5] <= instr[30: 25];
-				imm[4: 1] <= instr[24: 21];
-				imm[0] <= instr[20];
-
-				rs1_sel <= instr[19: 15];
-				rs2_sel <= 0;
-				funct7 <= 0;
-			end else if (opcode == op_store) begin
-				// S-Type
-				imm[31: 11] <= {21{instr[31]}};
-				imm[10: 5] <= instr[30: 25];
-				imm[4: 1] <= instr[11: 8];
-				imm[0] <= instr[7];
-
-				rs1_sel <= instr[19: 15];
-				rs2_sel <= instr[24: 20];
-				funct7 <= 0;
-			end else if (opcode == op_branch) begin
-				// B-Type
-				imm[31: 12] <= {20{instr[31]}};
-				imm[11] <= instr[7];
-				imm[10: 5] <= instr[30: 25];
-				imm[4: 1] <= instr[11: 8];
-				imm[0] <= 0;
-
-				rs1_sel <= instr[19: 15];
-				rs2_sel <= 0;
-				funct7 <= 0;
-			end else if (opcode == op_jal) begin
-				// J-Type
-				imm[31: 20] <= {12{instr[31]}};
-				imm[19: 12] <= instr[19: 12];
-				imm[11] <= instr[20];
-				imm[10: 5] <= instr[30: 25];
-				imm[4: 1] <= instr[24: 21];
-				imm[0] <= 0;
-
-				rs1_sel <= 0;
-				rs2_sel <= 0;
-				funct7 <= 0;
-			end else if (opcode == op_auipc || opcode == op_lui) begin
-				// U-Type
-				imm[31] <= instr[31];
-				imm[30: 20] <= instr[30: 20];
-				imm[19: 12] <= instr[19: 12];
-				imm[11: 0] <= 0;
-
-				rs1_sel <= 0;
-				rs2_sel <= 0;
-				funct7 <= 0;
-			end else begin
-				rs1_sel <= instr[19: 15];
-				rs2_sel <= instr[24: 20];
-				funct7 <= instr[31: 25];
-			end
-		end
-    end
-endmodule
-
-
-module EXECUTE #(
-    WIDTH = 32
-) (
-    input clk,
-    input reset,
-	input halt,
-
-	input i_type,
-	input j_type,
-
-    input [2: 0] funct3,
-    input [7: 0] funct7,
-    input [WIDTH - 1: 0] imm,
-
-    input [WIDTH - 1: 0] rs1,
-    input [WIDTH - 1: 0] rs2,
-    output reg [WIDTH - 1: 0] rd,
-
-    input [WIDTH - 1: 0] i_rd_sel,
-    output reg [WIDTH - 1: 0] o_rd_sel,
-
-	input [WIDTH - 1: 0] i_pc,
-	output reg [WIDTH - 1: 0] o_pc,
-
-	input sig_i_mem_wr_en,
-	output reg sig_o_mem_wr_en,
-
-	input sig_i_mem_rd_en,
-	output reg sig_o_mem_rd_en,
-
-	output reg [WIDTH - 1: 0] o_mem_wr_data,
-	output reg [2: 0] o_mem_rw_size
-);
-    parameter f3_add         =  'h0;
-    parameter f3_sub         =  'h0;
-    parameter f3_xor         =  'h4;
-    parameter f3_or          =  'h6;
-    parameter f3_and         =  'h7;
-    parameter f3_sll         =  'h1;
-    parameter f3_srl         =  'h5;
-    parameter f3_sra         =  'h5;
-    parameter f3_slt         =  'h2;
-    parameter f3_sltu        =  'h3;
-
-	parameter f7_add         =  'h00;
-	parameter f7_sub         =  'h20;
-	parameter f7_xor         =  'h00;
-	parameter f7_or          =  'h00;
-	parameter f7_and         =  'h00;
-	parameter f7_sll         =  'h00;
-	parameter f7_srl         =  'h00;
-	parameter f7_sra         =  'h20;
-	parameter f7_slt         =  'h00;
-	parameter f7_sltu        =  'h00;
-
-	wire [WIDTH - 1: 0] A = j_type ? 4: rs1;
-	wire [WIDTH - 1: 0] B =
-		j_type ?
-			i_pc:
-		i_type || sig_i_mem_wr_en || sig_i_mem_rd_en ?
-			imm:
-		rs2;
-
-	reg rst_0;
-	reg rst_1;
-
-	always @(posedge clk) begin
-		rst_0 <= j_type;
-		rst_1 <= rst_0;
-
-		if (reset) begin
-			o_pc <= 0;
-		end else if (halt == 0) begin
-			o_pc <= i_pc;
-		end
-		
-		if (reset || rst_0 || rst_1) begin
-			rd <= 0;
-
-			o_rd_sel <= 0;
-
-			sig_o_mem_wr_en <= 0;
-			sig_o_mem_rd_en <= 0;
-
-			o_mem_wr_data <= 0;
-			o_mem_rw_size <= 0;
-		end else if (halt == 0) begin
-			rd	<= j_type ? B:
-				sig_i_mem_wr_en || sig_i_mem_rd_en ||
-					(funct3 == f3_add && funct7 == f7_add)	? A + B:
-				funct3 == f3_sub 	&& funct7 == f7_sub 	? A - B:
-				funct3 == f3_xor 	&& funct7 == f7_xor 	? A ^ B:
-				funct3 == f3_or 	&& funct7 == f7_or 		? A | B:
-				funct3 == f3_and 	&& funct7 == f7_and 	? A & B:
-				funct3 == f3_sll 	&& funct7 == f7_sll 	? A << B[4: 0]:
-				funct3 == f3_srl 	&& funct7 == f7_srl 	? A >> B[4: 0]:
-				funct3 == f3_sra 	&& funct7 == f7_sra 	? A >> B[4: 0]:
-				funct3 == f3_slt 	&& funct7 == f7_slt 	? (A < B ? 1: 0):
-				funct3 == f3_sltu 	&& funct7 == f7_sltu 	? (A < B ? 1: 0):
-				0;
-
-			o_rd_sel <= i_rd_sel;
-
-			o_pc <= i_pc;
-
-			sig_o_mem_wr_en <= sig_i_mem_wr_en;
-			sig_o_mem_rd_en <= sig_i_mem_rd_en;
-
-			o_mem_wr_data <= sig_i_mem_rd_en || sig_i_mem_wr_en ? rs2: 0;
-			o_mem_rw_size <= sig_i_mem_rd_en || sig_i_mem_wr_en ? funct3:  0;
-		end
-	end
-endmodule
-
-
-module WRITE_BACK #(WIDTH = 32) (
+module WRITE_BACK #(parameter WIDTH = 32) (
 	input clk,
 	input reset,
 	input halt,
@@ -447,20 +98,20 @@ endmodule
 
 
 module processor #(
-    WIDTH = 32
+    parameter WIDTH = 32
 ) (
     input clk,
-    input reset
+    input reset,
 
     // input [WIDTH - 1: 0] PORT_IN_A,
     // input [WIDTH - 1: 0] PORT_IN_B,
     // input [WIDTH - 1: 0] PORT_IN_C,
     // input [WIDTH - 1: 0] PORT_IN_D,
 
-    // output [WIDTH - 1: 0] PORT_OUT_A,
-    // output [WIDTH - 1: 0] PORT_OUT_B,
-    // output [WIDTH - 1: 0] PORT_OUT_C,
-    // output [WIDTH - 1: 0] PORT_OUT_D
+    output reg [WIDTH - 1: 0] PORT_OUT_A,
+    output reg [WIDTH - 1: 0] PORT_OUT_B,
+    output reg [WIDTH - 1: 0] PORT_OUT_C,
+    output reg [WIDTH - 1: 0] PORT_OUT_D
 );
 	// FETCH
 	localparam LD_PC_DISABLE = 0;
@@ -497,6 +148,8 @@ module processor #(
 
 	wire DE_i_type;
 	wire DE_j_type;
+	wire DE_u_type;
+
 	wire DE_sig_mem_rd_en;
 	wire DE_sig_mem_wr_en;
 
@@ -508,6 +161,7 @@ module processor #(
 	wire EX_halt;
 	wire EX_i_type				= DE_i_type;
 	wire EX_j_type				= DE_j_type;
+	wire EX_u_type				= DE_u_type;
 	wire [2: 0] EX_funct3		= DE_funct3;
 	wire [7: 0] EX_funct7		= DE_funct7;
 	wire [WIDTH - 1: 0] EX_imm	= DE_imm;
@@ -582,9 +236,10 @@ module processor #(
 	// assign DE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 	// assign EX_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 
-	assign FE_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
-	assign DE_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
-	assign EX_halt	 = EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0 && MEM_o_rd_sel > 0;
+	assign FE_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
+	assign DE_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
+	assign EX_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
+
 	assign WB_rd_sel = MEM_o_rd_sel > 0 ? MEM_o_rd_sel: EX_o_rd_sel;
 	assign WB_rd  	 = MEM_o_rd_sel > 0 ? MEM_rd_data: EX_rd;
 
@@ -622,7 +277,7 @@ module processor #(
 		.reset            (reset),
 		.halt             (DE_halt),
 
-		.instr_raw        (DE_instr),
+		.instr            (DE_instr),
 
 		.imm              (DE_imm),
 		.funct3           (DE_funct3),
@@ -633,6 +288,7 @@ module processor #(
 
 		.i_type           (DE_i_type),
 		.j_type           (DE_j_type),
+		.u_type           (DE_u_type),
 
 		.i_pc			  (DE_i_pc),
 		.o_pc			  (DE_o_pc),
@@ -651,6 +307,7 @@ module processor #(
 
 		.i_type             (EX_i_type),
 		.j_type             (EX_j_type),
+		.u_type             (EX_u_type),
 
 		.funct3             (EX_funct3),
 		.funct7             (EX_funct7),
@@ -707,6 +364,28 @@ module processor #(
         .fe_rd_addr	(MEM_fe_rd_addr),
         .fe_rd_data	(MEM_fe_rd_data)
     );
+
+	always @(posedge clk) begin
+		if (reset) begin
+			PORT_OUT_A <= 0;
+			PORT_OUT_B <= 0;
+			PORT_OUT_C <= 0;
+			PORT_OUT_D <= 0;
+		end else begin
+			if (MEM_wr_en) begin
+				case (MEM_wr_addr)
+					'h40000000:
+						PORT_OUT_A <= MEM_wr_data;
+					'h40000001:
+						PORT_OUT_B <= MEM_wr_data;
+					'h40000002:
+						PORT_OUT_C <= MEM_wr_data;
+					'h40000003:
+						PORT_OUT_D <= MEM_wr_data;
+				endcase
+			end
+		end
+	end
 
 
 	WRITE_BACK #(

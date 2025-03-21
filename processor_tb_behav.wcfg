@@ -12,25 +12,29 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="217.001 ns"></ZoomEndTime>
-      <Cursor1Time time="75.000 ns"></Cursor1Time>
+      <ZoomEndTime time="143.001 ns"></ZoomEndTime>
+      <Cursor1Time time="5.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="214"></NameColumnWidth>
-      <ValueColumnWidth column_width="120"></ValueColumnWidth>
+      <NameColumnWidth column_width="151"></NameColumnWidth>
+      <ValueColumnWidth column_width="71"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="94" />
-   <wvobject type="logic" fp_name="/processor_tb/clk">
+   <WVObjectSize size="101" />
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/reset">
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/reset">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/processor_tb/u_processor/FE_halt">
       <obj_property name="ElementShortName">FE_halt</obj_property>
       <obj_property name="ObjectShortName">FE_halt</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/FE_reset">
+      <obj_property name="ElementShortName">FE_reset</obj_property>
+      <obj_property name="ObjectShortName">FE_reset</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/processor_tb/u_processor/FE_load_pc_A">
       <obj_property name="ElementShortName">FE_load_pc_A[31:0]</obj_property>
@@ -60,15 +64,9 @@
       <obj_property name="ElementShortName">DE_halt</obj_property>
       <obj_property name="ObjectShortName">DE_halt</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/processor_tb/u_processor/DE_reset">
-      <obj_property name="ElementShortName">DE_reset</obj_property>
-      <obj_property name="ObjectShortName">DE_reset</obj_property>
-   </wvobject>
    <wvobject type="array" fp_name="/processor_tb/u_processor/DE_instr">
       <obj_property name="ElementShortName">DE_instr[31:0]</obj_property>
       <obj_property name="ObjectShortName">DE_instr[31:0]</obj_property>
-      <obj_property name="CustomSignalColor">#A0A0A4</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/processor_tb/u_processor/DE_imm">
       <obj_property name="ElementShortName">DE_imm[31:0]</obj_property>
@@ -97,14 +95,14 @@
    <wvobject type="logic" fp_name="/processor_tb/u_processor/DE_i_type">
       <obj_property name="ElementShortName">DE_i_type</obj_property>
       <obj_property name="ObjectShortName">DE_i_type</obj_property>
-      <obj_property name="CustomSignalColor">#FF0080</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/processor_tb/u_processor/DE_j_type">
       <obj_property name="ElementShortName">DE_j_type</obj_property>
       <obj_property name="ObjectShortName">DE_j_type</obj_property>
-      <obj_property name="CustomSignalColor">#FF0080</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/DE_u_type">
+      <obj_property name="ElementShortName">DE_u_type</obj_property>
+      <obj_property name="ObjectShortName">DE_u_type</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/processor_tb/u_processor/DE_sig_mem_rd_en">
       <obj_property name="ElementShortName">DE_sig_mem_rd_en</obj_property>
@@ -134,6 +132,10 @@
       <obj_property name="ElementShortName">EX_j_type</obj_property>
       <obj_property name="ObjectShortName">EX_j_type</obj_property>
    </wvobject>
+   <wvobject type="logic" fp_name="/processor_tb/u_processor/EX_u_type">
+      <obj_property name="ElementShortName">EX_u_type</obj_property>
+      <obj_property name="ObjectShortName">EX_u_type</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/processor_tb/u_processor/EX_funct3">
       <obj_property name="ElementShortName">EX_funct3[2:0]</obj_property>
       <obj_property name="ObjectShortName">EX_funct3[2:0]</obj_property>
@@ -157,8 +159,6 @@
    <wvobject type="array" fp_name="/processor_tb/u_processor/EX_rd">
       <obj_property name="ElementShortName">EX_rd[31:0]</obj_property>
       <obj_property name="ObjectShortName">EX_rd[31:0]</obj_property>
-      <obj_property name="CustomSignalColor">#FFFF00</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/processor_tb/u_processor/EX_i_rd_sel">
       <obj_property name="ElementShortName">EX_i_rd_sel[4:0]</obj_property>
@@ -171,8 +171,6 @@
    <wvobject type="array" fp_name="/processor_tb/u_processor/EX_i_pc">
       <obj_property name="ElementShortName">EX_i_pc[31:0]</obj_property>
       <obj_property name="ObjectShortName">EX_i_pc[31:0]</obj_property>
-      <obj_property name="CustomSignalColor">#FFFF00</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/processor_tb/u_processor/EX_o_pc">
       <obj_property name="ElementShortName">EX_o_pc[31:0]</obj_property>
@@ -273,6 +271,22 @@
    <wvobject type="logic" fp_name="/processor_tb/u_processor/FE_ld_pc">
       <obj_property name="ElementShortName">FE_ld_pc</obj_property>
       <obj_property name="ObjectShortName">FE_ld_pc</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/PORT_OUT_A">
+      <obj_property name="ElementShortName">PORT_OUT_A[31:0]</obj_property>
+      <obj_property name="ObjectShortName">PORT_OUT_A[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/PORT_OUT_B">
+      <obj_property name="ElementShortName">PORT_OUT_B[31:0]</obj_property>
+      <obj_property name="ObjectShortName">PORT_OUT_B[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/PORT_OUT_C">
+      <obj_property name="ElementShortName">PORT_OUT_C[31:0]</obj_property>
+      <obj_property name="ObjectShortName">PORT_OUT_C[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/PORT_OUT_D">
+      <obj_property name="ElementShortName">PORT_OUT_D[31:0]</obj_property>
+      <obj_property name="ObjectShortName">PORT_OUT_D[31:0]</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/zero">
       <obj_property name="ElementShortName">zero[31:0]</obj_property>
@@ -405,5 +419,9 @@
    <wvobject type="array" fp_name="/processor_tb/u_processor/u_WRITE_BACK/t6">
       <obj_property name="ElementShortName">t6[31:0]</obj_property>
       <obj_property name="ObjectShortName">t6[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/processor_tb/u_processor/u_MEMORY/memory">
+      <obj_property name="ElementShortName">memory[0:1023][31:0]</obj_property>
+      <obj_property name="ObjectShortName">memory[0:1023][31:0]</obj_property>
    </wvobject>
 </wave_config>

@@ -3,7 +3,8 @@
 May 22 2024
 18:54:44
 /home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.sim/sim_1/behav/xsim/glbl.v,1708598507,verilog,,,,glbl,,,,,,,,
-/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sim_1/new/processor_tb.v,1741243988,verilog,,,,processor_tb,,,,,,,,
-/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/memory.v,1741319974,verilog,,/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/processor.v,,MEMORY,,,,,,,,
+/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sim_1/new/processor_tb.v,1741511545,verilog,,,,processor_tb,,,,,,,,
+/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/interface.v,1741506179,verilog,,/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/memory.v,,interface,,,,,,,,
+/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/memory.v,1741511449,verilog,,/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/processor.v,,MEMORY,,,,,,,,
 /home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/multiplier.v,1739911894,verilog,,/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sim_1/new/processor_tb.v,,multi_node;pipelined_boothe_multiplier,,,,,,,,
-/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/processor.v,1741434247,verilog,,/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sim_1/new/processor_tb.v,,DECODE;EXECUTE;FETCH;WRITE_BACK;processor,,,,,,,,
+/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sources_1/new/processor.v,1741508416,verilog,,/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/sim_1/new/processor_tb.v,,DECODE;EXECUTE;FETCH;WRITE_BACK;processor,,,,,,,,

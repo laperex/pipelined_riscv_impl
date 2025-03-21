@@ -1,53 +1,36 @@
 .global _start
 
+.equ PORT_OUT_A, 0xffffff00
+.equ PORT_OUT_B, 0xffffff10
+.equ PORT_OUT_C, 0xffffff20
+.equ PORT_OUT_D, 0xffffff30
+
+.section .data
+	# var2:   .half 5       # 16-bit integer (2 bytes)
+	# var3:   .byte 3       # 8-bit integer (1 byte)
+	# str1:   .asciz "Hello, RISC-V"  # Null-terminated string
+
 .section .text
 
 _start:
-	# j _e
-	li t2, 1  # load the immediate 0x140 (address) into register t6
+	# li t1, 0
+	li t2, 1
 
-	addi t1, t1, 1
+# 	# li t2, 1
 
-_stop:
-	j _stop
-
-	# t1 = x50
+# _loop:
+# 	mv t3, t1
+# 	mv t1, t2
+# 	add t2, t2, t3
 	
-	# j _m
-	# li t6, 0xf20  # load the immediate 0x140 (address) into register t6
-	# # nop
-	# # nop
+	la t1, PORT_OUT_A
+	sw t2, 0(t1)
 
-	# # t1 = 20
-	# # t6 = 10
+	# lw a1, 0x40000000
+	# lw t1, 0(a1)
 
-	# # li t1, 150
+var1:   .word 10      # 32-bit integer (4 bytes)
 
-	# sw t1, 0(t1) # store the word in t0 to memory address in t6 with 0 byte offset
-	# sw t6, 0(t6) # store the word in t0 to memory address in t6 with 0 byte offset
-	# li t1, 100
+_loop:
+	j _loop
 
-	# lw t2, 0(t6)
-	# # t2 = 0x2
-	# lw t3, 0(t1)
-
-# _e:
-# 	# nop
-# 	li t3, 255
-# # 	li t4, 101
-	
-# 	jal t2, _h
-
-# _m:
-# 	li t5, 100
-	# la t4, _e
-
-	# j _e
-
-	# # sw t1, 0(t6) # store the word in t0 to memory address in t6 with 0 byte offset
-
-	# addi t1, t2, 0x55
-	# li a0, 2
-	# li a7, 93
-
-	# ecall
