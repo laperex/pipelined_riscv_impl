@@ -281,7 +281,6 @@ module EXECUTE #(
 
 	input i_type,
 	input j_type,
-	input b_type,
 	input u_type,
 
     input [2: 0] funct3,
@@ -533,7 +532,7 @@ module processor #(
 	wire EX_halt;
 	wire EX_i_type				= DE_i_type;
 	wire EX_j_type				= DE_j_type;
-	wire EX_b_type				= DE_b_type;
+	// wire EX_b_type				= DE_b_type;
 	wire EX_u_type				= DE_u_type;
 	wire [2: 0] EX_funct3		= DE_funct3;
 	wire [7: 0] EX_funct7		= DE_funct7;
@@ -587,6 +586,18 @@ module processor #(
 	wire [4: 0] WB_rs2_sel	= DE_rs2_sel;
 	wire [WIDTH - 1: 0] WB_rs2;
 	assign EX_rs2			= WB_rs2;
+	
+	
+	wire is_branch_taken =
+		DE_b_type ?
+			EX_funct3 == 0 ? EX_rs1 == EX_rs2:
+			EX_funct3 == 1 ? EX_rs1 != EX_rs2:
+			EX_funct3 == 4 ? EX_rs1 < EX_rs2:
+			EX_funct3 == 5 ? EX_rs1 >= EX_rs2:
+			EX_funct3 == 6 ? EX_rs1 < EX_rs2:
+			EX_funct3 == 7 ? EX_rs1 >= EX_rs2:
+			0:
+		0;
 
 	// assign FE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 	assign FE_load_pc_B =
@@ -681,7 +692,7 @@ module processor #(
 
 		.i_type             (EX_i_type),
 		.j_type             (EX_j_type),
-		.b_type             (EX_b_type),
+		// .b_type             (EX_b_type),
 		.u_type             (EX_u_type),
 
 		.funct3             (EX_funct3),
