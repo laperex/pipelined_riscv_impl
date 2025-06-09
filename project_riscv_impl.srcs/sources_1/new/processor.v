@@ -187,9 +187,6 @@ module DECODE #(
 
 			o_pc <= 0;
         end else if (halt == 0) begin
-			rd_sel  <= instr[11: 7];
-
-
 			sig_mem_rd_en <= opcode == op_load;
 			sig_mem_wr_en <= opcode == op_store;
 
@@ -211,6 +208,7 @@ module DECODE #(
 				rs2_sel <= 0;
 				funct7 <= 0;
 				funct3  <= instr[14: 12];
+				rd_sel  <= instr[11: 7];
 			end else if (opcode == op_store) begin
 				// S-Type
 				imm[31: 11] <= {21{instr[31]}};
@@ -222,6 +220,7 @@ module DECODE #(
 				rs2_sel <= instr[24: 20];
 				funct7 <= 0;
 				funct3  <= instr[14: 12];
+				rd_sel  <= instr[11: 7];
 			end else if (opcode == op_branch) begin
 				// B-Type
 				imm[31: 12] <= {20{instr[31]}};
@@ -234,6 +233,7 @@ module DECODE #(
 				rs2_sel <= 0;
 				funct7 <= 0;
 				funct3  <= instr[14: 12];
+				rd_sel  <= 0;
 			end else if (opcode == op_jal) begin
 				// J-Type
 				imm[31: 20] <= {12{instr[31]}};
@@ -247,6 +247,7 @@ module DECODE #(
 				rs2_sel <= 0;
 				funct7 <= 0;
 				funct3  <= instr[14: 12];
+				rd_sel  <= instr[11: 7];
 			end else if (opcode == op_auipc || opcode == op_lui) begin
 				// U-Type
 				imm[31] <= instr[31];
@@ -258,11 +259,13 @@ module DECODE #(
 				rs2_sel <= 0;
 				funct7 <= 0;
 				funct3  <= 0;
+				rd_sel  <= instr[11: 7];
 			end else begin
 				rs1_sel <= instr[19: 15];
 				rs2_sel <= instr[24: 20];
 				funct7 <= instr[31: 25];
 				funct3  <= instr[14: 12];
+				rd_sel  <= instr[11: 7];
 			end
 		end
     end
@@ -327,14 +330,14 @@ module EXECUTE #(
 	parameter f7_sltu        =  'h00;
 
 	wire [WIDTH - 1: 0] A = 
-		j_type == 1 && b_type == 0 ?
+		j_type == 1 ?
 			i_pc:
 		u_type && i_type ?
 			o_pc:
 		rs1;
 
 	wire [WIDTH - 1: 0] B =
-		j_type == 1 && b_type == 0 ?
+		j_type == 1 ?
 			4:
 		u_type || i_type || sig_i_mem_wr_en || sig_i_mem_rd_en ?
 			imm:
@@ -365,14 +368,6 @@ module EXECUTE #(
 			o_mem_rw_size <= 0;
 		end else if (halt == 0) begin
 			rd	<=
-				b_type ?
-					funct3 == 0 ? A == B:
-					funct3 == 1 ? A != B:
-					funct3 == 4 ? A < B:
-					funct3 == 5 ? A >= B:
-					funct3 == 6 ? A < B:
-					funct3 == 7 ? A >= B:
-					0:
 				j_type ?
 					B:
 				sig_i_mem_wr_en || sig_i_mem_rd_en || (funct3 == f3_add && funct7 == f7_add)
@@ -623,7 +618,7 @@ module processor #(
 
 	// assign DE_reset = (DE_j_type == 1 && DE_i_type == 0) || reset;
 	// assign FE_reset = (DE_j_type == 1 && DE_i_type == 0) || reset;
-	assign FE_ld_pc = DE_j_type == 1 && DE_i_type == 0 ? DE_imm: 0;
+	// assign FE_ld_pc = DE_j_type == 1 && DE_i_type == 0 ? DE_imm: 0;
 	
 
 	// reg EX_reset;
