@@ -597,11 +597,11 @@ module processor #(
 			EX_funct3 == 6 ? EX_rs1 < EX_rs2:
 			EX_funct3 == 7 ? EX_rs1 >= EX_rs2:
 			0:
-		0;
+		DE_j_type;
 
 	// assign FE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 	assign FE_load_pc_B =
-		DE_j_type == 1 ?
+		is_branch_taken == 1 ?
 			DE_imm:
 		EX_i_rd_sel != EX_o_rd_sel && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0 ?
 			0:
@@ -610,7 +610,7 @@ module processor #(
 	assign FE_load_pc_A =
 		DE_j_type == 1 && DE_i_type == 1 ?
 			WB_rs1:
-		DE_j_type == 1 && DE_i_type == 0 ?
+		is_branch_taken == 1 && DE_i_type == 0 ?
 			EX_o_pc:
 		FE_pc;
 
