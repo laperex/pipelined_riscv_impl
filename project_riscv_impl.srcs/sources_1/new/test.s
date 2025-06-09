@@ -15,16 +15,17 @@
 _start:
 	# li t1, 0
 	li t2, 1
+	li t4, 100
 
 # 	# li t2, 1
 
 # _loop:
 # 	mv t3, t1
 # 	mv t1, t2
-# 	add t2, t2, t3
+	add t3, t4, t2
 	
-	la t1, PORT_OUT_A
-	sw t2, 0(t1)
+	# la t1, _loop
+	# sw t2, 0(t1)
 
 	# lw a1, 0x40000000
 	# lw t1, 0(a1)

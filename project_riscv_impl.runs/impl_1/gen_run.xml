@@ -3,11 +3,6 @@
   <File Type="ROUTE-RQS-RPT" Name="route_report_qor_suggestions_0.rpt"/>
   <File Type="POSTROUTE-PHYSOPT-RQS" Name="interface_postroute_physopted.rqs"/>
   <File Type="ROUTE-RQS" Name="interface_routed.rqs"/>
-  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
-  <File Type="BG-BGN" Name="interface.bgn"/>
-  <File Type="BITSTR-SYSDEF" Name="interface.sysdef"/>
-  <File Type="BITSTR-LTX" Name="debug_nets.ltx"/>
-  <File Type="BITSTR-LTX" Name="interface.ltx"/>
   <File Type="RBD_FILE" Name="interface.rbd"/>
   <File Type="NPI_FILE" Name="interface.npi"/>
   <File Type="RNPI_FILE" Name="interface.rnpi"/>
@@ -15,75 +10,66 @@
   <File Type="RCFI_FILE" Name="interface.rcfi"/>
   <File Type="PL-PDI-FILE" Name="interface_pld.pdi"/>
   <File Type="BOOT-PDI-FILE" Name="interface_boot.pdi"/>
-  <File Type="RDI-RDI" Name="interface.vdi"/>
-  <File Type="PDI-FILE" Name="interface.pdi"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-RPX" Name="interface_methodology_drc_routed.rpx"/>
+  <File Type="ROUTE-DRC-RPX" Name="interface_drc_routed.rpx"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-PB" Name="interface_methodology_drc_routed.pb"/>
+  <File Type="ROUTE-METHODOLOGY-DRC" Name="interface_methodology_drc_routed.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="interface_bus_skew_postroute_physopted.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="interface_bus_skew_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="interface_bus_skew_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="interface_timing_summary_postroute_physopted.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="interface_timing_summary_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="interface_timing_summary_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="interface_postroute_physopt_bb.dcp"/>
+  <File Type="PLACE-IO" Name="interface_io_placed.rpt"/>
+  <File Type="OPT-DRC" Name="interface_drc_opted.rpt"/>
+  <File Type="BITSTR-LTX" Name="debug_nets.ltx"/>
+  <File Type="BITSTR-LTX" Name="interface.ltx"/>
+  <File Type="BITSTR-SYSDEF" Name="interface.sysdef"/>
+  <File Type="POSTROUTE-PHYSOPT-DCP" Name="interface_postroute_physopt.dcp"/>
   <File Type="BITSTR-MMI" Name="interface.mmi"/>
   <File Type="BITSTR-BMM" Name="interface_bd.bmm"/>
-  <File Type="BITSTR-NKY" Name="interface.nky"/>
-  <File Type="BITSTR-RBT" Name="interface.rbt"/>
-  <File Type="BITSTR-MSK" Name="interface.msk"/>
-  <File Type="BG-BIN" Name="interface.bin"/>
+  <File Type="PHYSOPT-DCP" Name="interface_physopt.dcp"/>
+  <File Type="PLACE-UTIL-PB" Name="interface_utilization_placed.pb"/>
+  <File Type="BG-BGN" Name="interface.bgn"/>
+  <File Type="OPT-DCP" Name="interface_opt.dcp"/>
+  <File Type="OPT-HWDEF" Name="interface.hwdef"/>
   <File Type="POSTROUTE-PHYSOPT-RQS-RPT" Name="postroute_physopt_report_qor_suggestions_0.rpt"/>
   <File Type="BG-BIT" Name="interface.bit"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="processor_bus_skew_postroute_physopted.rpx"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="processor_bus_skew_postroute_physopted.pb"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="processor_bus_skew_postroute_physopted.rpt"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="processor_timing_summary_postroute_physopted.rpx"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="processor_timing_summary_postroute_physopted.pb"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="processor_timing_summary_postroute_physopted.rpt"/>
-  <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="interface_postroute_physopt_bb.dcp"/>
-  <File Type="POSTROUTE-PHYSOPT-DCP" Name="interface_postroute_physopt.dcp"/>
-  <File Type="BG-DRC" Name="interface.drc"/>
-  <File Type="ROUTE-RQS-PB" Name="interface_rqs_routed.pb"/>
-  <File Type="ROUTE-BUS-SKEW-RPX" Name="interface_bus_skew_routed.rpx"/>
-  <File Type="ROUTE-BUS-SKEW-PB" Name="interface_bus_skew_routed.pb"/>
   <File Type="ROUTE-BUS-SKEW" Name="interface_bus_skew_routed.rpt"/>
-  <File Type="ROUTE-CLK" Name="interface_clock_utilization_routed.rpt"/>
-  <File Type="ROUTE-SIMILARITY" Name="interface_incremental_reuse_routed.rpt"/>
-  <File Type="ROUTE-TIMING-RPX" Name="interface_timing_summary_routed.rpx"/>
-  <File Type="ROUTE-TIMING-PB" Name="interface_timing_summary_routed.pb"/>
-  <File Type="ROUTE-TIMINGSUMMARY" Name="interface_timing_summary_routed.rpt"/>
-  <File Type="ROUTE-STATUS-PB" Name="interface_route_status.pb"/>
-  <File Type="ROUTE-STATUS" Name="interface_route_status.rpt"/>
-  <File Type="ROUTE-PWR-RPX" Name="interface_power_routed.rpx"/>
-  <File Type="ROUTE-PWR-SUM" Name="interface_power_summary_routed.pb"/>
-  <File Type="ROUTE-PWR" Name="interface_power_routed.rpt"/>
-  <File Type="ROUTE-METHODOLOGY-DRC-PB" Name="interface_methodology_drc_routed.pb"/>
-  <File Type="ROUTE-METHODOLOGY-DRC-RPX" Name="interface_methodology_drc_routed.rpx"/>
-  <File Type="ROUTE-METHODOLOGY-DRC" Name="interface_methodology_drc_routed.rpt"/>
-  <File Type="ROUTE-DRC-RPX" Name="interface_drc_routed.rpx"/>
-  <File Type="ROUTE-DRC-PB" Name="interface_drc_routed.pb"/>
+  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+  <File Type="PA-TCL" Name="interface.tcl"/>
+  <File Type="REPORTS-TCL" Name="interface_reports.tcl"/>
+  <File Type="PLACE-UTIL" Name="interface_utilization_placed.rpt"/>
+  <File Type="BG-DRC" Name="interface.drc"/>
+  <File Type="PLACE-CTRL" Name="interface_control_sets_placed.rpt"/>
+  <File Type="PDI-FILE" Name="interface.pdi"/>
+  <File Type="RDI-RDI" Name="interface.vdi"/>
+  <File Type="BG-BIN" Name="interface.bin"/>
+  <File Type="PLACE-DCP" Name="interface_placed.dcp"/>
+  <File Type="BITSTR-MSK" Name="interface.msk"/>
+  <File Type="PWROPT-DCP" Name="interface_pwropt.dcp"/>
+  <File Type="PLACE-PRE-SIMILARITY" Name="interface_incremental_reuse_pre_placed.rpt"/>
+  <File Type="BITSTR-RBT" Name="interface.rbt"/>
+  <File Type="POSTPLACE-PWROPT-DCP" Name="interface_postplace_pwropt.dcp"/>
+  <File Type="BITSTR-NKY" Name="interface.nky"/>
   <File Type="ROUTE-DRC" Name="interface_drc_routed.rpt"/>
-  <File Type="ROUTE-BLACKBOX-DCP" Name="interface_routed_bb.dcp"/>
+  <File Type="ROUTE-DRC-PB" Name="interface_drc_routed.pb"/>
+  <File Type="ROUTE-PWR" Name="interface_power_routed.rpt"/>
+  <File Type="ROUTE-PWR-SUM" Name="interface_power_summary_routed.pb"/>
+  <File Type="ROUTE-PWR-RPX" Name="interface_power_routed.rpx"/>
+  <File Type="ROUTE-STATUS" Name="interface_route_status.rpt"/>
+  <File Type="ROUTE-STATUS-PB" Name="interface_route_status.pb"/>
   <File Type="ROUTE-DCP" Name="interface_routed.dcp"/>
   <File Type="ROUTE-ERROR-DCP" Name="interface_routed_error.dcp"/>
-  <File Type="PHYSOPT-TIMING" Name="interface_timing_summary_physopted.rpt"/>
-  <File Type="PHYSOPT-DRC" Name="interface_drc_physopted.rpt"/>
-  <File Type="PHYSOPT-DCP" Name="interface_physopt.dcp"/>
-  <File Type="POSTPLACE-PWROPT-TIMING" Name="interface_timing_summary_postplace_pwropted.rpt"/>
-  <File Type="POSTPLACE-PWROPT-DCP" Name="interface_postplace_pwropt.dcp"/>
-  <File Type="PLACE-RQA-PB" Name="interface_rqa_placed.pb"/>
-  <File Type="PLACE-TIMING" Name="interface_timing_summary_placed.rpt"/>
-  <File Type="PLACE-PRE-SIMILARITY" Name="interface_incremental_reuse_pre_placed.rpt"/>
-  <File Type="PLACE-SIMILARITY" Name="interface_incremental_reuse_placed.rpt"/>
-  <File Type="PLACE-CTRL" Name="interface_control_sets_placed.rpt"/>
-  <File Type="PLACE-UTIL-PB" Name="interface_utilization_placed.pb"/>
-  <File Type="PLACE-UTIL" Name="interface_utilization_placed.rpt"/>
-  <File Type="PLACE-CLK" Name="interface_clock_utilization_placed.rpt"/>
-  <File Type="PLACE-IO" Name="interface_io_placed.rpt"/>
-  <File Type="PLACE-DCP" Name="interface_placed.dcp"/>
-  <File Type="PWROPT-TIMING" Name="interface_timing_summary_pwropted.rpt"/>
-  <File Type="PWROPT-DRC" Name="interface_drc_pwropted.rpt"/>
-  <File Type="PWROPT-DCP" Name="interface_pwropt.dcp"/>
-  <File Type="OPT-RQA-PB" Name="interface_rqa_opted.pb"/>
-  <File Type="OPT-HWDEF" Name="interface.hwdef"/>
-  <File Type="OPT-METHODOLOGY-DRC" Name="interface_methodology_drc_opted.rpt"/>
-  <File Type="OPT-DRC" Name="interface_drc_opted.rpt"/>
-  <File Type="OPT-DCP" Name="interface_opt.dcp"/>
-  <File Type="OPT-TIMING" Name="interface_timing_summary_opted.rpt"/>
-  <File Type="REPORTS-TCL" Name="interface_reports.tcl"/>
-  <File Type="INIT-TIMING" Name="interface_timing_summary_init.rpt"/>
-  <File Type="PA-TCL" Name="interface.tcl"/>
+  <File Type="ROUTE-BLACKBOX-DCP" Name="interface_routed_bb.dcp"/>
+  <File Type="ROUTE-TIMINGSUMMARY" Name="interface_timing_summary_routed.rpt"/>
+  <File Type="ROUTE-TIMING-PB" Name="interface_timing_summary_routed.pb"/>
+  <File Type="ROUTE-TIMING-RPX" Name="interface_timing_summary_routed.rpx"/>
+  <File Type="ROUTE-SIMILARITY" Name="interface_incremental_reuse_routed.rpt"/>
+  <File Type="ROUTE-CLK" Name="interface_clock_utilization_routed.rpt"/>
+  <File Type="ROUTE-BUS-SKEW-PB" Name="interface_bus_skew_routed.pb"/>
+  <File Type="ROUTE-BUS-SKEW-RPX" Name="interface_bus_skew_routed.rpx"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
     <File Path="$PSRCDIR/sources_1/new/memory.v">
@@ -149,9 +135,7 @@
     </Config>
   </FileSet>
   <Strategy Version="1" Minor="2">
-    <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2024">
-      <Desc>Default settings for Implementation.</Desc>
-    </StratHandle>
+    <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2024"/>
     <Step Id="init_design"/>
     <Step Id="opt_design"/>
     <Step Id="power_opt_design"/>
@@ -161,5 +145,6 @@
     <Step Id="route_design"/>
     <Step Id="post_route_phys_opt_design"/>
     <Step Id="write_bitstream"/>
+    <Step Id="write_device_image"/>
   </Strategy>
 </GenRun>
