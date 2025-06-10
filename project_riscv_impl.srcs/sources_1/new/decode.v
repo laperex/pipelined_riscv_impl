@@ -1,4 +1,6 @@
 
+
+
 module DECODE #(
     parameter WIDTH = 32
 ) (
@@ -17,6 +19,7 @@ module DECODE #(
 
     output reg i_type,
     output reg j_type,
+    output reg b_type,
     output reg u_type,
 
     input [WIDTH - 1: 0] i_pc,
@@ -123,6 +126,8 @@ module DECODE #(
     parameter imm_ebreak     =  'h1;
 
     wire [6: 0] opcode = instr[6: 0];
+	
+	reg test;
 
     always @(posedge clk) begin
 		if (reset) begin
@@ -136,20 +141,22 @@ module DECODE #(
 
 			i_type <= 0;
 			j_type <= 0;
+			b_type <= 0;
+			u_type <= 0;
+			
+			test <= 0;
 
 			sig_mem_rd_en <= 0;
 			sig_mem_wr_en <= 0;
 
 			o_pc <= 0;
         end else if (halt == 0) begin
-			rd_sel  <= instr[11: 7];
-
-
 			sig_mem_rd_en <= opcode == op_load;
 			sig_mem_wr_en <= opcode == op_store;
 
 			i_type <= opcode[5] == 0;
 			j_type <= opcode == op_jal || opcode == op_jalr;
+			b_type <= opcode == op_branch;
 			u_type <= opcode == op_auipc || opcode == op_lui;
 
 			o_pc <= i_pc;
@@ -163,8 +170,9 @@ module DECODE #(
 
 				rs1_sel <= instr[19: 15];
 				rs2_sel <= 0;
-				funct7 <= 0;
+				funct7  <= 0;
 				funct3  <= instr[14: 12];
+				rd_sel  <= instr[11: 7];
 			end else if (opcode == op_store) begin
 				// S-Type
 				imm[31: 11] <= {21{instr[31]}};
@@ -174,8 +182,9 @@ module DECODE #(
 
 				rs1_sel <= instr[19: 15];
 				rs2_sel <= instr[24: 20];
-				funct7 <= 0;
+				funct7  <= 0;
 				funct3  <= instr[14: 12];
+				rd_sel  <= instr[11: 7];
 			end else if (opcode == op_branch) begin
 				// B-Type
 				imm[31: 12] <= {20{instr[31]}};
@@ -183,11 +192,14 @@ module DECODE #(
 				imm[10: 5] <= instr[30: 25];
 				imm[4: 1] <= instr[11: 8];
 				imm[0] <= 0;
+				
+				test <= 1;
 
 				rs1_sel <= instr[19: 15];
-				rs2_sel <= 0;
-				funct7 <= 0;
+				rs2_sel <= instr[24: 20];
 				funct3  <= instr[14: 12];
+				funct7 <= 0;
+				rd_sel  <= 0;
 			end else if (opcode == op_jal) begin
 				// J-Type
 				imm[31: 20] <= {12{instr[31]}};
@@ -201,6 +213,7 @@ module DECODE #(
 				rs2_sel <= 0;
 				funct7 <= 0;
 				funct3  <= instr[14: 12];
+				rd_sel  <= instr[11: 7];
 			end else if (opcode == op_auipc || opcode == op_lui) begin
 				// U-Type
 				imm[31] <= instr[31];
@@ -212,11 +225,13 @@ module DECODE #(
 				rs2_sel <= 0;
 				funct7 <= 0;
 				funct3  <= 0;
+				rd_sel  <= instr[11: 7];
 			end else begin
 				rs1_sel <= instr[19: 15];
 				rs2_sel <= instr[24: 20];
 				funct7 <= instr[31: 25];
 				funct3  <= instr[14: 12];
+				rd_sel  <= instr[11: 7];
 			end
 		end
     end

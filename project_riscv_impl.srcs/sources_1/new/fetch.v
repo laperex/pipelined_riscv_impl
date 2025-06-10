@@ -50,3 +50,25 @@ module FETCH #(
 		end
     end
 endmodule
+
+// module FETCH #(
+//     parameter WIDTH = 32
+// ) (
+//     input clk,
+//     input reset,
+//     input halt,
+
+// 	input [WIDTH - 1: 0] load_pc_A,
+// 	input [WIDTH - 1: 0] load_pc_B,
+
+// 	output reg [WIDTH - 1: 0] pc_out
+// );
+
+//     always @(posedge clk) begin
+//         if (reset) begin
+//             pc_out <= 0;
+//         end else if (halt == 0) begin
+// 			pc_out <= load_pc_A + load_pc_B;
+// 		end
+//     end
+// endmodule

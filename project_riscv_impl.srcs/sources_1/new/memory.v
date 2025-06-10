@@ -56,11 +56,12 @@ module MEMORY #(
 
 
 	initial begin : initialisation
-		// integer i;
+		integer i;
 
-		// for (i = 0; i < SIZE; i = i + 1) begin
-		// 	memory[i][WIDTH - 1: 0] = 0;
-		// end
+		for (i = 0; i < SIZE; i = i + 1) begin
+			memory[i][WIDTH - 1: 0] = 0;
+			rom[i][WIDTH - 1: 0] = 0;
+		end
 
 		$readmemh(INITFILE, rom);
 	end

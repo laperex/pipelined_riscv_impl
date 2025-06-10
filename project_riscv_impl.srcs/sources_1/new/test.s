@@ -12,26 +12,45 @@
 
 .section .text
 
+var1:   .word 10      # 32-bit integer (4 bytes)
+
 _start:
-	# li t1, 0
+	li t5, 60
+	li t1, 0
 	li t2, 1
+	
+_loop:
+	mv t3, t1
+	mv t1, t2
+	add t2, t1, t3
+
+	blt t2, t5, _loop
+	# j _loop
+	# nop
+	# nop
 	li t4, 100
+	# li t6, 1
 
 # 	# li t2, 1
 
 # _loop:
 # 	mv t3, t1
 # 	mv t1, t2
-	add t3, t4, t2
+	# la t1, var1
+
+
 	
-	# la t1, _loop
 	# sw t2, 0(t1)
 
 	# lw a1, 0x40000000
-	# lw t1, 0(a1)
+	# lw t2, 0(t1)
+	# lw t2, 0(t1)
 
-var1:   .word 10      # 32-bit integer (4 bytes)
 
-_loop:
-	j _loop
-
+# _loop:
+# 	li t5, 60
+# 	addi t6, t6, 4;
+# 	blt t6, t5, _loop
+	
+# 	add t3, t4, t2
+	
