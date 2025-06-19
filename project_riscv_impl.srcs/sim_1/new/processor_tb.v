@@ -38,25 +38,14 @@ module processor_tb;
 
 	assign btnC = reset;
 	
-	
-	processor #(
-		.WIDTH         (32)
-	) u_processor (
-		.clk           (clk),
-		.reset         (reset),
-
-		.PORT_IN_A     (PORT_IN_A),
-		.PORT_IN_B     (PORT_IN_B),
-		.PORT_IN_C     (PORT_IN_C),
-		.PORT_IN_D     (PORT_IN_D),
-		.PORT_OUT_A    (PORT_OUT_A),
-		.PORT_OUT_B    (PORT_OUT_B),
-		.PORT_OUT_C    (PORT_OUT_C),
-		.PORT_OUT_D    (PORT_OUT_D)
+	interface u_interface (
+		.clk     (clk),
+		.btnC    (btnC),
+		.led     (led)
 	);
 
 	// reg en = 0;
-	// wire [63: 0] s_result = 0;
+	// wire [63: 0] s_result;
 
 	// pipelined_boothe_multiplier #(
 	// 	.WIDTH       (32)

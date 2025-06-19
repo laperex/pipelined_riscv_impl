@@ -58,7 +58,7 @@ module pipelined_boothe_multiplier #(
     input [WIDTH - 1: 0] md,
     input [WIDTH - 1: 0] mr,
 
-    output [2 * WIDTH - 1: 0] s_result
+    output [(2 * WIDTH) - 1: 0] s_result
 );
 	wire [WIDTH - 1: 0] _md[WIDTH: 0];
 	wire [WIDTH - 1: 0] _pd[WIDTH: 0];
