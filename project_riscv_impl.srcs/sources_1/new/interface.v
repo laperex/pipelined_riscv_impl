@@ -39,6 +39,7 @@ module interface(
 	) u_processor (
 		.clk           (clk),
 		.reset         (btnC),
+
 		// input [WIDTH - 1: 0] PORT_IN_A,
 		// input [WIDTH - 1: 0] PORT_IN_B,
 		// input [WIDTH - 1: 0] PORT_IN_C,

@@ -45,7 +45,7 @@ module processor_tb;
 	);
 
 	// reg en = 0;
-	// wire [63: 0] s_result = 0;
+	// wire [63: 0] s_result;
 
 	// pipelined_boothe_multiplier #(
 	// 	.WIDTH       (32)

@@ -282,7 +282,7 @@ module processor #(
         .WIDTH		(WIDTH),
         .SIZE 		(1024),
 
-        .INITFILE	("/home/laperex/Programming/Vivado/project_riscv_impl/assets/sample.txt"),
+        .INITFILE	("./assets/build/rom.txt"),
         .DUMPFILE	("")
     ) u_MEMORY (
         .wr_clk		(clk),

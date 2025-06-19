@@ -1,0 +1,19 @@
+#!/bin/bash
+
+output_file="./assets/build/rom.txt"
+
+# MODIFY FOR INPUT FILE IN DIFFERENT LOCATION
+input_file="./assets/src/test.s"
+
+# Assemble
+temp_obj="$HOME/.cache/__test.o"
+riscv64-unknown-elf-as "$input_file" -o "$temp_obj"
+
+# Check if assembly succeeded
+if [ ! -f "$temp_obj" ]; then
+  echo "Error: Failed to generate object file!" >&2
+  exit 1
+fi
+
+# Convert to text
+riscv_hex_to_txt "$temp_obj" "$output_file" 415E000000
