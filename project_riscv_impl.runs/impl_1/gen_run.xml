@@ -1,75 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="impl_1" LaunchPart="xc7a35tcpg236-1" LaunchTime="1741513856">
-  <File Type="ROUTE-RQS-RPT" Name="route_report_qor_suggestions_0.rpt"/>
-  <File Type="POSTROUTE-PHYSOPT-RQS" Name="interface_postroute_physopted.rqs"/>
-  <File Type="ROUTE-RQS" Name="interface_routed.rqs"/>
-  <File Type="RBD_FILE" Name="interface.rbd"/>
-  <File Type="NPI_FILE" Name="interface.npi"/>
-  <File Type="RNPI_FILE" Name="interface.rnpi"/>
-  <File Type="CFI_FILE" Name="interface.cfi"/>
-  <File Type="RCFI_FILE" Name="interface.rcfi"/>
-  <File Type="PL-PDI-FILE" Name="interface_pld.pdi"/>
-  <File Type="BOOT-PDI-FILE" Name="interface_boot.pdi"/>
-  <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="interface_postroute_physopt_bb.dcp"/>
-  <File Type="POSTROUTE-PHYSOPT-DCP" Name="interface_postroute_physopt.dcp"/>
-  <File Type="PHYSOPT-DCP" Name="interface_physopt.dcp"/>
-  <File Type="POSTPLACE-PWROPT-DCP" Name="interface_postplace_pwropt.dcp"/>
-  <File Type="PWROPT-DCP" Name="interface_pwropt.dcp"/>
-  <File Type="PLACE-DCP" Name="interface_placed.dcp"/>
-  <File Type="OPT-DCP" Name="interface_opt.dcp"/>
-  <File Type="ROUTE-TIMING-PB" Name="interface_timing_summary_routed.pb"/>
-  <File Type="ROUTE-BLACKBOX-DCP" Name="interface_routed_bb.dcp"/>
-  <File Type="ROUTE-ERROR-DCP" Name="interface_routed_error.dcp"/>
-  <File Type="ROUTE-DCP" Name="interface_routed.dcp"/>
-  <File Type="PLACE-PRE-SIMILARITY" Name="interface_incremental_reuse_pre_placed.rpt"/>
-  <File Type="OPT-HWDEF" Name="interface.hwdef"/>
-  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
-  <File Type="BITSTR-LTX" Name="debug_nets.ltx"/>
-  <File Type="BITSTR-LTX" Name="interface.ltx"/>
-  <File Type="BITSTR-SYSDEF" Name="interface.sysdef"/>
+<GenRun Id="impl_1" LaunchPart="xc7a35tcpg236-1" LaunchTime="1750315097">
+  <File Type="PL_UNMASK_RCDO_FILE" Name="processor_pld_unmask.rcdo"/>
+  <File Type="PL_UNMASK_MARKER_RCDO_FILE" Name="processor_pld_unmask_markers.rcdo"/>
+  <File Type="PL_MASK_RCDO_FILE" Name="processor_pld_mask.rcdo"/>
+  <File Type="PL_MARKER_RCDO_FILE" Name="processor_pld_markers.rcdo"/>
+  <File Type="PL-CLEAR-RCDO-FILE" Name="processor_pld_clear.rcdo"/>
+  <File Type="PL_UNMASK_RNPI_FILE" Name="processor_pld_unmask.rnpi"/>
+  <File Type="PL_SHUTDOWN_RNPI_FILE" Name="processor_pld_shutdown.rnpi"/>
+  <File Type="PL_MASK_RNPI_FILE" Name="processor_pld_mask.rnpi"/>
+  <File Type="PL_MARKER_RNPI_FILE" Name="processor_pld_markers.rnpi"/>
+  <File Type="BOOT_MARKER_RNPI_FILE" Name="processor_boot_markers.rnpi"/>
+  <File Type="PL_RNPI_FILE" Name="processor_pld.rnpi"/>
+  <File Type="BOOT_RNPI_FILE" Name="processor_boot.rnpi"/>
+  <File Type="MARKER-RNPI-FILE" Name="processor_markers.rnpi"/>
+  <File Type="PL-RCDO-FILE" Name="processor_pld.rcdo"/>
+  <File Type="MARKER-RCDO-FILE" Name="processor_markers.rcdo"/>
+  <File Type="RCDO-FILE" Name="processor.rcdo"/>
+  <File Type="PL-LTX-FILE" Name="processor_pld.ltx"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="processor_timing_summary_postroute_physopted.rpx"/>
+  <File Type="BITSTR-MSK" Name="processor.msk"/>
+  <File Type="ROUTE-BUS-SKEW-PB" Name="processor_bus_skew_routed.pb"/>
+  <File Type="ROUTE-BUS-SKEW-RPX" Name="processor_bus_skew_routed.rpx"/>
+  <File Type="ROUTE-BUS-SKEW" Name="processor_bus_skew_routed.rpt"/>
+  <File Type="ROUTE-CLK" Name="processor_clock_utilization_routed.rpt"/>
+  <File Type="ROUTE-SIMILARITY" Name="processor_incremental_reuse_routed.rpt"/>
+  <File Type="ROUTE-DRC-PB" Name="processor_drc_routed.pb"/>
+  <File Type="ROUTE-DRC-RPX" Name="processor_drc_routed.rpx"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-RPX" Name="processor_methodology_drc_routed.rpx"/>
+  <File Type="ROUTE-DRC" Name="processor_drc_routed.rpt"/>
+  <File Type="ROUTE-PWR-SUM" Name="processor_power_summary_routed.pb"/>
+  <File Type="ROUTE-PWR-RPX" Name="processor_power_routed.rpx"/>
+  <File Type="ROUTE-PWR" Name="processor_power_routed.rpt"/>
+  <File Type="BG-DRC" Name="processor.drc"/>
+  <File Type="ROUTE-STATUS-PB" Name="processor_route_status.pb"/>
+  <File Type="ROUTE-STATUS" Name="processor_route_status.rpt"/>
+  <File Type="BITSTR-BMM" Name="processor_bd.bmm"/>
+  <File Type="ROUTE-TIMING-RPX" Name="processor_timing_summary_routed.rpx"/>
+  <File Type="ROUTE-TIMINGSUMMARY" Name="processor_timing_summary_routed.rpt"/>
+  <File Type="BG-BGN" Name="processor.bgn"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-PB" Name="processor_methodology_drc_routed.pb"/>
+  <File Type="REPORTS-TCL" Name="processor_reports.tcl"/>
+  <File Type="PA-TCL" Name="processor.tcl"/>
+  <File Type="ROUTE-METHODOLOGY-DRC" Name="processor_methodology_drc_routed.rpt"/>
+  <File Type="PLACE-CTRL" Name="processor_control_sets_placed.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="processor_timing_summary_postroute_physopted.rpt"/>
+  <File Type="BITSTR-MMI" Name="processor.mmi"/>
+  <File Type="BITSTR-NKY" Name="processor.nky"/>
+  <File Type="PLACE-UTIL" Name="processor_utilization_placed.rpt"/>
+  <File Type="PLACE-UTIL-PB" Name="processor_utilization_placed.pb"/>
+  <File Type="OPT-DRC" Name="processor_drc_opted.rpt"/>
+  <File Type="PLACE-IO" Name="processor_io_placed.rpt"/>
+  <File Type="BG-BIN" Name="processor.bin"/>
+  <File Type="BITSTR-RBT" Name="processor.rbt"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="processor_timing_summary_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="processor_bus_skew_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="processor_bus_skew_postroute_physopted.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="processor_bus_skew_postroute_physopted.pb"/>
+  <File Type="RDI-RDI" Name="processor.vdi"/>
+  <File Type="PDI-FILE" Name="processor.pdi"/>
+  <File Type="BG-BIT" Name="processor.bit"/>
   <File Type="POSTROUTE-PHYSOPT-RQS-RPT" Name="postroute_physopt_report_qor_suggestions_0.rpt"/>
-  <File Type="BG-BIT" Name="interface.bit"/>
-  <File Type="PDI-FILE" Name="interface.pdi"/>
-  <File Type="RDI-RDI" Name="interface.vdi"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="interface_bus_skew_postroute_physopted.pb"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="interface_bus_skew_postroute_physopted.rpx"/>
-  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="interface_bus_skew_postroute_physopted.rpt"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="interface_timing_summary_postroute_physopted.pb"/>
-  <File Type="BITSTR-RBT" Name="interface.rbt"/>
-  <File Type="BG-BIN" Name="interface.bin"/>
-  <File Type="PLACE-IO" Name="interface_io_placed.rpt"/>
-  <File Type="OPT-DRC" Name="interface_drc_opted.rpt"/>
-  <File Type="PLACE-UTIL-PB" Name="interface_utilization_placed.pb"/>
-  <File Type="PLACE-UTIL" Name="interface_utilization_placed.rpt"/>
-  <File Type="BITSTR-NKY" Name="interface.nky"/>
-  <File Type="BITSTR-MMI" Name="interface.mmi"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="interface_timing_summary_postroute_physopted.rpt"/>
-  <File Type="PLACE-CTRL" Name="interface_control_sets_placed.rpt"/>
-  <File Type="ROUTE-METHODOLOGY-DRC" Name="interface_methodology_drc_routed.rpt"/>
-  <File Type="PA-TCL" Name="interface.tcl"/>
-  <File Type="REPORTS-TCL" Name="interface_reports.tcl"/>
-  <File Type="ROUTE-METHODOLOGY-DRC-PB" Name="interface_methodology_drc_routed.pb"/>
-  <File Type="BG-BGN" Name="interface.bgn"/>
-  <File Type="ROUTE-TIMINGSUMMARY" Name="interface_timing_summary_routed.rpt"/>
-  <File Type="ROUTE-TIMING-RPX" Name="interface_timing_summary_routed.rpx"/>
-  <File Type="BITSTR-BMM" Name="interface_bd.bmm"/>
-  <File Type="ROUTE-STATUS" Name="interface_route_status.rpt"/>
-  <File Type="ROUTE-STATUS-PB" Name="interface_route_status.pb"/>
-  <File Type="BG-DRC" Name="interface.drc"/>
-  <File Type="ROUTE-PWR" Name="interface_power_routed.rpt"/>
-  <File Type="ROUTE-PWR-RPX" Name="interface_power_routed.rpx"/>
-  <File Type="ROUTE-PWR-SUM" Name="interface_power_summary_routed.pb"/>
-  <File Type="ROUTE-DRC" Name="interface_drc_routed.rpt"/>
-  <File Type="ROUTE-METHODOLOGY-DRC-RPX" Name="interface_methodology_drc_routed.rpx"/>
-  <File Type="ROUTE-DRC-RPX" Name="interface_drc_routed.rpx"/>
-  <File Type="ROUTE-DRC-PB" Name="interface_drc_routed.pb"/>
-  <File Type="ROUTE-SIMILARITY" Name="interface_incremental_reuse_routed.rpt"/>
-  <File Type="ROUTE-CLK" Name="interface_clock_utilization_routed.rpt"/>
-  <File Type="ROUTE-BUS-SKEW" Name="interface_bus_skew_routed.rpt"/>
-  <File Type="ROUTE-BUS-SKEW-RPX" Name="interface_bus_skew_routed.rpx"/>
-  <File Type="ROUTE-BUS-SKEW-PB" Name="interface_bus_skew_routed.pb"/>
-  <File Type="BITSTR-MSK" Name="interface.msk"/>
-  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="interface_timing_summary_postroute_physopted.rpx"/>
+  <File Type="BITSTR-SYSDEF" Name="processor.sysdef"/>
+  <File Type="MMI-FILE" Name="processor.mmi"/>
+  <File Type="BITSTR-LTX" Name="debug_nets.ltx"/>
+  <File Type="BITSTR-LTX" Name="processor.ltx"/>
+  <File Type="BIF-FILE" Name="processor.bif"/>
+  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+  <File Type="BOOT-LTX-FILE" Name="processor_boot.ltx"/>
+  <File Type="OPT-HWDEF" Name="processor.hwdef"/>
+  <File Type="PLACE-PRE-SIMILARITY" Name="processor_incremental_reuse_pre_placed.rpt"/>
+  <File Type="ROUTE-DCP" Name="processor_routed.dcp"/>
+  <File Type="ROUTE-ERROR-DCP" Name="processor_routed_error.dcp"/>
+  <File Type="ROUTE-BLACKBOX-DCP" Name="processor_routed_bb.dcp"/>
+  <File Type="ROUTE-TIMING-PB" Name="processor_timing_summary_routed.pb"/>
+  <File Type="OPT-DCP" Name="processor_opt.dcp"/>
+  <File Type="PLACE-DCP" Name="processor_placed.dcp"/>
+  <File Type="PWROPT-DCP" Name="processor_pwropt.dcp"/>
+  <File Type="POSTPLACE-PWROPT-DCP" Name="processor_postplace_pwropt.dcp"/>
+  <File Type="PHYSOPT-DCP" Name="processor_physopt.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-DCP" Name="processor_postroute_physopt.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="processor_postroute_physopt_bb.dcp"/>
+  <File Type="BOOT-PDI-FILE" Name="processor_boot.pdi"/>
+  <File Type="PL-PDI-FILE" Name="processor_pld.pdi"/>
+  <File Type="RCFI_FILE" Name="processor.rcfi"/>
+  <File Type="CFI_FILE" Name="processor.cfi"/>
+  <File Type="RNPI_FILE" Name="processor.rnpi"/>
+  <File Type="NPI_FILE" Name="processor.npi"/>
+  <File Type="RBD_FILE" Name="processor.rbd"/>
+  <File Type="ROUTE-RQS" Name="processor_routed.rqs"/>
+  <File Type="POSTROUTE-PHYSOPT-RQS" Name="processor_postroute_physopted.rqs"/>
+  <File Type="ROUTE-RQS-RPT" Name="route_report_qor_suggestions_0.rpt"/>
+  <File Type="BOOT-BIF-FILE" Name="processor_boot.bif"/>
+  <File Type="PL-BIF-FILE" Name="processor_pld.bif"/>
+  <File Type="LTX-FILE" Name="processor.ltx"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
     <File Path="$PSRCDIR/sources_1/new/memory.v">
@@ -86,8 +109,41 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
+    <File Path="$PSRCDIR/sources_1/new/decode.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/execute.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/fetch.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/write_back.v">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
     <File Path="$PSRCDIR/sources_1/new/interface.v">
       <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -103,7 +159,7 @@
     </File>
     <Config>
       <Option Name="DesignMode" Val="RTL"/>
-      <Option Name="TopModule" Val="interface"/>
+      <Option Name="TopModule" Val="processor"/>
       <Option Name="TopAutoSet" Val="TRUE"/>
     </Config>
   </FileSet>

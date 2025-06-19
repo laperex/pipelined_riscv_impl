@@ -1,5 +1,5 @@
 namespace eval ::optrace {
-  variable script "/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.runs/impl_1/interface.tcl"
+  variable script "/home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.runs/impl_1/processor.tcl"
   variable category "vivado_impl"
 }
 
@@ -97,9 +97,6 @@ proc step_failed { step } {
 OPTRACE "impl_1" END { }
 }
 
-set_msg_config -id {Common 17-41} -limit 10000000
-set_msg_config -id {Synth 8-256} -limit 10000
-set_msg_config -id {Synth 8-638} -limit 10000
 
 OPTRACE "impl_1" START { ROLLUP_1 }
 OPTRACE "Phase: Init Design" START { ROLLUP_AUTO }
@@ -107,16 +104,11 @@ start_step init_design
 set ACTIVE_STEP init_design
 set rc [catch {
   create_msg_db init_design.pb
-  set_param ced.repoPaths /home/laperex/Programming/Vivado/ced_store/Vivado_example_project
-  set_param checkpoint.writeSynthRtdsInDcp 1
   set_param chipscope.maxJobs 5
-  set_param xicom.use_bs_reader 1
-  set_param tcl.collectionResultDisplayLimit 0
-  set_param synth.incrementalSynthesisCache ./.Xil/Vivado-4038205-laperex-l5ip/incrSyn
+  set_param general.usePosixSpawnForFork 1
   set_param runs.launchOptions { -jobs 20  }
 OPTRACE "create in-memory project" START { }
   create_project -in_memory -part xc7a35tcpg236-1
-  set_property board_part digilentinc.com:basys3:part0:1.2 [current_project]
   set_property design_mode GateLvl [current_fileset]
   set_param project.singleFileAddWarning.threshold 0
 OPTRACE "create in-memory project" END { }
@@ -127,7 +119,7 @@ OPTRACE "set parameters" START { }
   set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "set parameters" END { }
 OPTRACE "add files" START { }
-  add_files -quiet /home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.runs/synth_1/interface.dcp
+  add_files -quiet /home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.runs/synth_1/processor.dcp
 OPTRACE "read constraints: implementation" START { }
   read_xdc /home/laperex/Programming/Vivado/project_riscv_impl/project_riscv_impl.srcs/constrs_1/new/basys3.xdc
 OPTRACE "read constraints: implementation" END { }
@@ -135,7 +127,7 @@ OPTRACE "read constraints: implementation_pre" START { }
 OPTRACE "read constraints: implementation_pre" END { }
 OPTRACE "add files" END { }
 OPTRACE "link_design" START { }
-  link_design -top interface -part xc7a35tcpg236-1 
+  link_design -top processor -part xc7a35tcpg236-1 
 OPTRACE "link_design" END { }
 OPTRACE "gray box cells" START { }
 OPTRACE "gray box cells" END { }
@@ -168,11 +160,11 @@ OPTRACE "read constraints: opt_design_post" START { }
 OPTRACE "read constraints: opt_design_post" END { }
 OPTRACE "opt_design reports" START { REPORT }
   set_param project.isImplRun true
-  generate_parallel_reports -reports { "report_drc -file interface_drc_opted.rpt -pb interface_drc_opted.pb -rpx interface_drc_opted.rpx"  }
+  generate_parallel_reports -reports { "report_drc -file processor_drc_opted.rpt -pb processor_drc_opted.pb -rpx processor_drc_opted.rpx"  }
   set_param project.isImplRun false
 OPTRACE "opt_design reports" END { }
 OPTRACE "Opt Design: write_checkpoint" START { CHECKPOINT }
-  write_checkpoint -force interface_opt.dcp
+  write_checkpoint -force processor_opt.dcp
 OPTRACE "Opt Design: write_checkpoint" END { }
   close_msg_db -file opt_design.pb
 } RESULT]
@@ -198,17 +190,19 @@ OPTRACE "implement_debug_core" START { }
 OPTRACE "implement_debug_core" END { }
   } 
 OPTRACE "place_design" START { }
+  set_param project.isImplRun true
   place_design 
+  set_param project.isImplRun false
 OPTRACE "place_design" END { }
 OPTRACE "read constraints: place_design_post" START { }
 OPTRACE "read constraints: place_design_post" END { }
 OPTRACE "place_design reports" START { REPORT }
   set_param project.isImplRun true
-  generate_parallel_reports -reports { "report_io -file interface_io_placed.rpt" "report_utilization -file interface_utilization_placed.rpt -pb interface_utilization_placed.pb" "report_control_sets -verbose -file interface_control_sets_placed.rpt"  }
+  generate_parallel_reports -reports { "report_io -file processor_io_placed.rpt" "report_utilization -file processor_utilization_placed.rpt -pb processor_utilization_placed.pb" "report_control_sets -verbose -file processor_control_sets_placed.rpt"  }
   set_param project.isImplRun false
 OPTRACE "place_design reports" END { }
 OPTRACE "Place Design: write_checkpoint" START { CHECKPOINT }
-  write_checkpoint -force interface_placed.dcp
+  write_checkpoint -force processor_placed.dcp
 OPTRACE "Place Design: write_checkpoint" END { }
   close_msg_db -file place_design.pb
 } RESULT]
@@ -236,7 +230,7 @@ OPTRACE "read constraints: phys_opt_design_post" END { }
 OPTRACE "phys_opt_design report" START { REPORT }
 OPTRACE "phys_opt_design report" END { }
 OPTRACE "Post-Place Phys Opt Design: write_checkpoint" START { CHECKPOINT }
-  write_checkpoint -force interface_physopt.dcp
+  write_checkpoint -force processor_physopt.dcp
 OPTRACE "Post-Place Phys Opt Design: write_checkpoint" END { }
   close_msg_db -file phys_opt_design.pb
 } RESULT]
@@ -263,11 +257,11 @@ OPTRACE "read constraints: route_design_post" START { }
 OPTRACE "read constraints: route_design_post" END { }
 OPTRACE "route_design reports" START { REPORT }
   set_param project.isImplRun true
-  generate_parallel_reports -reports { "report_drc -file interface_drc_routed.rpt -pb interface_drc_routed.pb -rpx interface_drc_routed.rpx" "report_methodology -file interface_methodology_drc_routed.rpt -pb interface_methodology_drc_routed.pb -rpx interface_methodology_drc_routed.rpx" "report_power -file interface_power_routed.rpt -pb interface_power_summary_routed.pb -rpx interface_power_routed.rpx" "report_route_status -file interface_route_status.rpt -pb interface_route_status.pb" "report_timing_summary -max_paths 10 -report_unconstrained -file interface_timing_summary_routed.rpt -pb interface_timing_summary_routed.pb -rpx interface_timing_summary_routed.rpx -warn_on_violation " "report_incremental_reuse -file interface_incremental_reuse_routed.rpt" "report_clock_utilization -file interface_clock_utilization_routed.rpt" "report_bus_skew -warn_on_violation -file interface_bus_skew_routed.rpt -pb interface_bus_skew_routed.pb -rpx interface_bus_skew_routed.rpx"  }
+  generate_parallel_reports -reports { "report_drc -file processor_drc_routed.rpt -pb processor_drc_routed.pb -rpx processor_drc_routed.rpx" "report_methodology -file processor_methodology_drc_routed.rpt -pb processor_methodology_drc_routed.pb -rpx processor_methodology_drc_routed.rpx" "report_power -file processor_power_routed.rpt -pb processor_power_summary_routed.pb -rpx processor_power_routed.rpx" "report_route_status -file processor_route_status.rpt -pb processor_route_status.pb" "report_timing_summary -max_paths 10 -report_unconstrained -file processor_timing_summary_routed.rpt -pb processor_timing_summary_routed.pb -rpx processor_timing_summary_routed.rpx -warn_on_violation " "report_incremental_reuse -file processor_incremental_reuse_routed.rpt" "report_clock_utilization -file processor_clock_utilization_routed.rpt" "report_bus_skew -warn_on_violation -file processor_bus_skew_routed.rpt -pb processor_bus_skew_routed.pb -rpx processor_bus_skew_routed.rpx"  }
   set_param project.isImplRun false
 OPTRACE "route_design reports" END { }
 OPTRACE "Route Design: write_checkpoint" START { CHECKPOINT }
-  write_checkpoint -force interface_routed.dcp
+  write_checkpoint -force processor_routed.dcp
 OPTRACE "Route Design: write_checkpoint" END { }
 OPTRACE "route_design misc" START { }
   close_msg_db -file route_design.pb
@@ -275,7 +269,7 @@ OPTRACE "route_design misc" START { }
 if {$rc} {
 OPTRACE "route_design write_checkpoint" START { CHECKPOINT }
 OPTRACE "route_design write_checkpoint" END { }
-  write_checkpoint -force interface_routed_error.dcp
+  write_checkpoint -force processor_routed_error.dcp
   step_failed route_design
   return -code error $RESULT
 } else {
@@ -285,34 +279,4 @@ OPTRACE "route_design write_checkpoint" END { }
 
 OPTRACE "route_design misc" END { }
 OPTRACE "Phase: Route Design" END { }
-OPTRACE "Phase: Write Bitstream" START { ROLLUP_AUTO }
-OPTRACE "write_bitstream setup" START { }
-start_step write_bitstream
-set ACTIVE_STEP write_bitstream
-set rc [catch {
-  create_msg_db write_bitstream.pb
-OPTRACE "read constraints: write_bitstream" START { }
-OPTRACE "read constraints: write_bitstream" END { }
-  catch { write_mem_info -force -no_partial_mmi interface.mmi }
-OPTRACE "write_bitstream setup" END { }
-OPTRACE "write_bitstream" START { }
-  write_bitstream -force interface.bit 
-OPTRACE "write_bitstream" END { }
-OPTRACE "write_bitstream misc" START { }
-OPTRACE "read constraints: write_bitstream_post" START { }
-OPTRACE "read constraints: write_bitstream_post" END { }
-  catch {write_debug_probes -quiet -force interface}
-  catch {file copy -force interface.ltx debug_nets.ltx}
-  close_msg_db -file write_bitstream.pb
-} RESULT]
-if {$rc} {
-  step_failed write_bitstream
-  return -code error $RESULT
-} else {
-  end_step write_bitstream
-  unset ACTIVE_STEP 
-}
-
-OPTRACE "write_bitstream misc" END { }
-OPTRACE "Phase: Write Bitstream" END { }
 OPTRACE "impl_1" END { }

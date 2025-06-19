@@ -4,13 +4,13 @@
 # Vivado(TM)
 # runme.sh: a Vivado-generated Runs Script for UNIX
 # Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
-# Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 # 
 
 if [ -z "$PATH" ]; then
-  PATH=/opt/Xilinx/Vitis/2024.1/bin:/opt/Xilinx/Vivado/2024.1/ids_lite/ISE/bin/lin64:/opt/Xilinx/Vivado/2024.1/bin
+  PATH=/opt/Xilinx/2025.1/Vitis/bin:/opt/Xilinx/2025.1/Vivado/ids_lite/ISE/bin/lin64:/opt/Xilinx/2025.1/Vivado/bin
 else
-  PATH=/opt/Xilinx/Vitis/2024.1/bin:/opt/Xilinx/Vivado/2024.1/ids_lite/ISE/bin/lin64:/opt/Xilinx/Vivado/2024.1/bin:$PATH
+  PATH=/opt/Xilinx/2025.1/Vitis/bin:/opt/Xilinx/2025.1/Vivado/ids_lite/ISE/bin/lin64:/opt/Xilinx/2025.1/Vivado/bin:$PATH
 fi
 export PATH
 
@@ -39,6 +39,6 @@ EAStep()
 
 # pre-commands:
 /bin/touch .init_design.begin.rst
-EAStep vivado -log interface.vdi -applog -m64 -product Vivado -messageDb vivado.pb -mode batch -source interface.tcl -notrace
+EAStep vivado -log processor.vdi -applog -m64 -product Vivado -messageDb vivado.pb -mode batch -source processor.tcl -notrace
 
 
