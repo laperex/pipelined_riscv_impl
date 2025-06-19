@@ -1,9 +1,9 @@
 #!/bin/bash
 
-output_file="./assets/build/rom.txt"
+output_file="project_riscv_impl.sim/sim_1/behav/xsim/rom.txt"
 
-# MODIFY FOR INPUT FILE IN DIFFERENT LOCATION
-input_file="./assets/src/test.s"
+# input riscv assembly file
+input_file="./assets/test.s"
 
 # Assemble
 temp_obj="$HOME/.cache/__test.o"

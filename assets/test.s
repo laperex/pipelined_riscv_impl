@@ -14,6 +14,8 @@
 
 # SAMPLE CODE FOR FIBONACCI
 
+# Output visibile in t1 register
+
 var1:   .word 10      # 32-bit integer (4 bytes)
 
 _start:

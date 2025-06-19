@@ -282,7 +282,7 @@ module processor #(
         .WIDTH		(WIDTH),
         .SIZE 		(1024),
 
-        .INITFILE	("./assets/build/rom.txt"),
+        .INITFILE	("rom.txt"),
         .DUMPFILE	("")
     ) u_MEMORY (
         .wr_clk		(clk),
