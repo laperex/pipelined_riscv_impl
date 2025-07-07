@@ -36,7 +36,7 @@ module interface(
 
 	processor #(
 		.WIDTH      (32),
-        .INITFILE	("/home/laperex/Programming/FPGA/pipelined_riscv/build/rom.txt"),
+        .INITFILE	("/home/laperex/Programming/FPGA/pipelined_riscv/srcs/sources/rom.txt"),
         .DUMPFILE	("")
 	) u_processor (
 		.clk           (clk),
