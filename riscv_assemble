@@ -1,6 +1,6 @@
 #!/bin/bash
 
-output_file="/home/laperex/Programming/FPGA/pipelined_riscv/build/rom.txt"
+output_file="./build/rom.txt"
 
 # input riscv assembly file
 input_file="./assets/test.s"

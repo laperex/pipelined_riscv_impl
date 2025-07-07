@@ -139,6 +139,10 @@ module processor #(
     wire [4: 0] WB_rs1_sel	= DE_rs1_sel;
     wire [WIDTH - 1: 0] WB_rs1;
     assign EX_rs1			= WB_rs1;
+	
+	// if (MEM_i_rd_sel == WB_rs1_sel && WB_rs1_sel > 0) begin
+	// 	rd_temp
+	// end
 
     wire [4: 0] WB_rs2_sel	= DE_rs2_sel;
     wire [WIDTH - 1: 0] WB_rs2;
@@ -197,6 +201,40 @@ module processor #(
     // 	DE_reset <= (DE_j_type == 1 && DE_i_type == 0) || reset;
     // 	EX_reset <= reset | DE_reset;
     // end
+	
+	
+	
+	reg [31: 0] rd_prev;
+	reg rd_prev_en;
+	
+	
+    always @(posedge clk) begin
+        if (reset) begin
+            PORT_OUT_A <= 0;
+            PORT_OUT_B <= 0;
+            PORT_OUT_C <= 0;
+            PORT_OUT_D <= 0;
+			rd_prev <= 0;
+			rd_prev_en <= 0;
+        end else begin
+			rd_prev_en <= (MEM_i_rd_sel > 0) && (MEM_i_rd_sel == WB_rs1_sel) && MEM_rd_en;
+			rd_prev <= MEM_rd_data;
+
+            if (MEM_wr_en) begin
+                case (MEM_wr_addr)
+                    'h40000000:
+                        PORT_OUT_A <= MEM_wr_data;
+                    'h40000001:
+                        PORT_OUT_B <= MEM_wr_data;
+                    'h40000002:
+                        PORT_OUT_C <= MEM_wr_data;
+                    'h40000003:
+                        PORT_OUT_D <= MEM_wr_data;
+                endcase
+            end
+        end
+    end
+
 
 
     FETCH #(
@@ -309,28 +347,6 @@ module processor #(
         .fe_rd_addr	(MEM_fe_rd_addr),
         .fe_rd_data	(MEM_fe_rd_data)
     );
-
-    always @(posedge clk) begin
-        if (reset) begin
-            PORT_OUT_A <= 0;
-            PORT_OUT_B <= 0;
-            PORT_OUT_C <= 0;
-            PORT_OUT_D <= 0;
-        end else begin
-            if (MEM_wr_en) begin
-                case (MEM_wr_addr)
-                    'h40000000:
-                        PORT_OUT_A <= MEM_wr_data;
-                    'h40000001:
-                        PORT_OUT_B <= MEM_wr_data;
-                    'h40000002:
-                        PORT_OUT_C <= MEM_wr_data;
-                    'h40000003:
-                        PORT_OUT_D <= MEM_wr_data;
-                endcase
-            end
-        end
-    end
 
 
     WRITE_BACK #(
