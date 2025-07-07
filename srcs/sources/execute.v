@@ -84,7 +84,7 @@ module EXECUTE #(
 			o_pc <= i_pc;
 		end
 		
-		if (reset || rst_0 || rst_1) begin
+		if (reset || rst_0 || rst_1 || halt) begin
 			rd <= 0;
 
 			o_rd_sel <= 0;

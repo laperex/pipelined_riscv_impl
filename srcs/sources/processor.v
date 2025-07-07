@@ -115,6 +115,7 @@ module processor #(
 
     // MEMORY
     reg MEM_halt = 0;
+	wire MEM_fe_halt				= FE_halt;
     wire [4: 0] MEM_i_rd_sel		= EX_o_rd_sel;
     wire [4: 0] MEM_o_rd_sel;
 
@@ -132,8 +133,11 @@ module processor #(
     // WRITE BACK
     reg WB_halt = 0;
 
-    wire [4: 0] WB_rd_sel;
-    wire [WIDTH - 1: 0] WB_rd;
+    wire [4: 0] WB_rd_ex_sel;
+    wire [WIDTH - 1: 0] WB_rd_ex;
+	
+    wire [4: 0] WB_rd_mem_sel;
+    wire [WIDTH - 1: 0] WB_rd_mem;
     // assign WB_rd = MEM_rd_data;
 
     wire [4: 0] WB_rs1_sel	= DE_rs1_sel;
@@ -183,17 +187,23 @@ module processor #(
     // assign DE_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
     // assign EX_halt	 = EX_i_rd_sel != EX_o_rd_sel  && EX_sig_i_mem_rd_en == 0 && EX_sig_o_mem_rd_en == 1 && EX_o_rd_sel > 0;
 
-    assign FE_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
-    assign DE_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
-    assign EX_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
+    // assign FE_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
+    // assign DE_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
+    // assign EX_halt	 = MEM_o_rd_sel > 0 && EX_o_rd_sel != MEM_o_rd_sel && EX_sig_o_mem_rd_en == 0;
 
-    assign WB_rd_sel = MEM_o_rd_sel > 0 ? MEM_o_rd_sel: EX_o_rd_sel;
-    assign WB_rd  	 = MEM_o_rd_sel > 0 ? MEM_rd_data: EX_rd;
+    assign WB_rd_ex_sel		= EX_o_rd_sel;
+    assign WB_rd_ex			= EX_rd;
+	
+	assign WB_rd_mem_sel	= MEM_o_rd_sel;
+	assign WB_rd_mem		= MEM_rd_data;
+	
+    assign FE_halt	 = (MEM_i_rd_sel == WB_rs1_sel || MEM_i_rd_sel == WB_rs2_sel) && EX_sig_o_mem_rd_en;
+    assign DE_halt	 = (MEM_i_rd_sel == WB_rs1_sel || MEM_i_rd_sel == WB_rs2_sel) && EX_sig_o_mem_rd_en;
+    assign EX_halt	 = (MEM_i_rd_sel == WB_rs1_sel || MEM_i_rd_sel == WB_rs2_sel) && EX_sig_o_mem_rd_en;
 
     // assign DE_reset = (DE_j_type == 1 && DE_i_type == 0) || reset;
     // assign FE_reset = (DE_j_type == 1 && DE_i_type == 0) || reset;
     // assign FE_ld_pc = DE_j_type == 1 && DE_i_type == 0 ? DE_imm: 0;
-    
 
     // reg EX_reset;
     // reg DE_reset;
@@ -329,6 +339,7 @@ module processor #(
         .rd_clk		(clk),
         .reset		(reset),
         .halt 		(MEM_halt),
+        .fe_halt 	(MEM_fe_halt),
 
         .i_rd_sel   (MEM_i_rd_sel),
         .o_rd_sel   (MEM_o_rd_sel),
@@ -356,11 +367,15 @@ module processor #(
         .reset      (reset),
         .halt       (WB_halt),
 
-        .rd_sel     (WB_rd_sel),
+        .rd_ex_sel     (WB_rd_ex_sel),
+        .rd_mem_sel     (WB_rd_mem_sel),
+
         .rs1_sel    (WB_rs1_sel),
         .rs2_sel    (WB_rs2_sel),
 
-        .rd         (WB_rd),
+        .rd_ex         (WB_rd_ex),
+        .rd_mem         (WB_rd_mem),
+		
         .rs1        (WB_rs1),
         .rs2        (WB_rs2)
     );

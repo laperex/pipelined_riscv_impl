@@ -4,18 +4,33 @@ module WRITE_BACK #(parameter WIDTH = 32) (
 	input reset,
 	input halt,
 
-	input [4: 0] rd_sel,
+	input [4: 0] rd_ex_sel,
+	input [4: 0] rd_mem_sel,
+
 	input [4: 0] rs1_sel,
 	input [4: 0] rs2_sel,
 
-	input [WIDTH - 1: 0] rd,
+	input [WIDTH - 1: 0] rd_ex,
+	input [WIDTH - 1: 0] rd_mem,
+
 	output [WIDTH - 1: 0] rs1,
 	output [WIDTH - 1: 0] rs2
 );
 	reg [WIDTH - 1: 0] reg_x[WIDTH - 1: 0];
 
-	assign rs1 = rd_sel > 0 && rd_sel == rs1_sel ? rd: reg_x[rs1_sel];
-	assign rs2 = rd_sel > 0 && rd_sel == rs2_sel ? rd: reg_x[rs2_sel];
+	assign rs1 = rs1_sel > 0 &&
+		rd_ex_sel == rs1_sel ?
+			rd_ex:
+		rd_mem_sel == rs1_sel ?
+			rd_mem:
+		reg_x[rs1_sel];
+
+	assign rs2 = rs2_sel > 0 &&
+		rd_ex_sel == rs2_sel ?
+			rd_ex:
+		rd_mem_sel == rs2_sel ?
+			rd_mem:
+		reg_x[rs2_sel];
 
 	wire [WIDTH - 1: 0] zero	= reg_x[0];
 
@@ -66,8 +81,11 @@ module WRITE_BACK #(parameter WIDTH = 32) (
 
 	always @(posedge clk) begin
 		if (reset == 0 && halt == 0) begin
-			if (rd_sel > 0) begin
-				reg_x[rd_sel] <= rd;
+			if (rd_ex_sel > 0) begin
+				reg_x[rd_ex_sel] <= rd_ex;
+			end
+			if (rd_mem_sel > 0 && rd_ex_sel != rd_mem_sel) begin
+				reg_x[rd_mem_sel] <= rd_mem;
 			end
 		end
 	end

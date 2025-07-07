@@ -19,53 +19,29 @@
 
 _start:
 	nop
+	li t4, 100
 	li t5, 60
 	
 	la t0, var1
 	sw t5, 0(t0)
 	
-	# li t1, 0
-	# li t2, 1
+	li t1, 0
+	li t2, 1
 	
 	lw t6, 0(t0)
-	# nop
-	nop
-	# nop
+	
 	mv t4, t6
 	
-# _loop:
-# 	mv t3, t1
-# 	mv t1, t2
-# 	add t2, t1, t3
+_loop:
+	li t4, 101
 
-# 	blt t2, t5, _loop
-	# j _loop
-	# nop
-	# nop
-	li t4, 100
-	# li t6, 1
+	mv t3, t1
+	mv t1, t2
+	add t2, t1, t3
+
+	blt t2, t5, _loop
+
+	li t4, 105
+	li t6, 1
 
 var1:   .word 10      # 32-bit integer (4 bytes)
-# 	# li t2, 1
-
-# _loop:
-# 	mv t3, t1
-# 	mv t1, t2
-	# la t1, var1
-
-
-	
-	# sw t2, 0(t1)
-
-	# lw a1, 0x40000000
-	# lw t2, 0(t1)
-	# lw t2, 0(t1)
-
-
-# _loop:
-# 	li t5, 60
-# 	addi t6, t6, 4;
-# 	blt t6, t5, _loop
-	
-# 	add t3, t4, t2
-	
